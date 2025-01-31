@@ -15,7 +15,7 @@ COLOR_SENSOR_DATA_FILE = "../data_analysis/color_sensor.csv"
 print("Program start.\nWaiting for sensors to turn on...")
 
 # complete this based on your hardware setup
-COLOR_SENSOR = EV3ColorSensor(2)
+COLOR_SENSOR = EV3ColorSensor(3)
 TOUCH_SENSOR = TouchSensor(1)
 
 
@@ -26,13 +26,14 @@ def collect_color_sensor_data():
     "Collect color sensor data."
    
     try:
+        print("Hello")
         output_file = open(COLOR_SENSOR_DATA_FILE, "w")
         while True:
             
             sleep(DELAY_SEC)
     
             if TOUCH_SENSOR.is_pressed():
-                print("PRESSED")
+                print("PRESSED") 
                 color_data = COLOR_SENSOR.get_rgb() 
                 if color_data is not [None, None, None]: 
                     print(color_data)
@@ -48,4 +49,7 @@ def collect_color_sensor_data():
         output_file.close()
         reset_brick() 
         exit()
+        
+if __name__ == "__main__":
+    collect_color_sensor_data()
     
