@@ -21,9 +21,9 @@ def play_sound(x):
         C4.play()
     elif x==2:
         E4.play()
-    elif x==3:
-        G4.play()
     elif x==4:
+        G4.play()
+    elif x==3:
         B4.play()
 
 if __name__=='__main__':
