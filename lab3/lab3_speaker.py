@@ -25,8 +25,6 @@ def play_sound(x):
         G4.play()
     elif x==4:
         B4.play()
-    else:
-        print("err: invalid note")
 
 if __name__=='__main__':
     
