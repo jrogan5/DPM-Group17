@@ -12,12 +12,11 @@ TS3 = TouchSensor(3)
 
 wait_ready_sensors(True)
 
-bti = lambda x : 1 if x else 0
+bti = lambda x : 1 if x else 0 # boolean to int
 
     
 # configuration should be set for x amount of time
-def collect_input_data():
-
+def collect_input_int():
     num = 4*bti(TS1.is_pressed()) + 2*(TS2.is_pressed())+TS3.is_pressed()
     time.wait(0.2)
     new_num = 4*bti(TS1.is_pressed()) + 2*(TS2.is_pressed())+TS3.is_pressed()
