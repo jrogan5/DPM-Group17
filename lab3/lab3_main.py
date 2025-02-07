@@ -7,4 +7,6 @@ if __name__ == "__main__":
     while True:
         speaker.play_sound(triple_input.collect_input_int())
         emergency_button()
+        if drm_start :
+        drum_cycle()
         
