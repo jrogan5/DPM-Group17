@@ -15,9 +15,9 @@ def drum_cycle():
     
     
     motor.set_position(-60) # 100%
-    time.sleep(0.3) # Wait to finish
+    time.sleep(0.5) # Wait to finish
     motor.set_position(0)
-    time.sleep(0.3)
+    time.sleep(0.5)
     print("done")
     
     
@@ -34,9 +34,16 @@ def drum_loop(n):
         drum_cycle()
         i += 1
     
+def drum_init():
+    motor.set_limits(30,360)
+    motor.reset_encoder()
+    
+
+    
+    
 if __name__ == '__main__' :
     try:
-        motor.set_limits(50,360)
+        motor.set_limits(30,360)
         motor.reset_encoder()
         drum_loop(5)
         #drum_reset_pos()
