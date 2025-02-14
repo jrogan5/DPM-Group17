@@ -16,30 +16,31 @@ wait_ready_sensors(True)
     
 drum_stop_event = threading.Event()
 
-def drum_cycle():
+def drum_cycle(half_beat):
     "hits the drum once"
     motor.set_position(-60) # 100%
-    time.sleep(0.5) # wait to finish
+    time.sleep(half_beat) # wait to finish
     motor.set_position(0)
-    time.sleep(0.5)
+    time.sleep(half_beat)
     #print("Hit Drum")
     
-def drum_loop_continuous():
+def drum_loop_continuous(half_beat):
     "run drum cycles until stopped"
     while not drum_stop_event.is_set():
-        drum_cycle()
+        drum_cycle(half_beat)
 
-def start_drum():
+def start_drum(half_beat):
     "start drum thread"
     global drum_stop_event
     drum_stop_event.clear()
-    drum_thread = threading.Thread(target=drum_loop_continuous)
+    drum_thread = threading.Thread(target=drum_loop_continuous(half_beat))
     drum_thread.start()
 
 def stop_drum():
     "stop the drum thread"
     global drum_stop_event
     drum_stop_event.set()
+    motor.set_position(0)
     
 def drum_init():
     "initialize the drum with limits"
@@ -50,7 +51,7 @@ if __name__ == '__main__' :
     try:
         motor.set_limits(30,360)
         motor.reset_encoder()
-        drum_loop(5)
+        # drum_loop(5)
         #drum_reset_pos()
         if input("float? y/n") == "y" :
             motor.float_motor()
