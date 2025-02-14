@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
-"""
-Module to play sounds when the touch sensor is pressed.
-This file must be run on the robot.
-"""
+'''lab3_speaker
+Plays flute notes on the speaker based on input
+
+Authors: David Vo, James Rogan, Brian Morava
+February 14th, 2025
+'''
  
 from utils import sound
 from utils.brick import TouchSensor, wait_ready_sensors, reset_brick
@@ -24,11 +26,7 @@ G5 = sound.Sound(duration=0.3, pitch="G5", volume=100)
 A6 = sound.Sound(duration=0.3, pitch="A6", volume=100)
 B6 = sound.Sound(duration=0.3, pitch="B6", volume=100)
 
-
-
 wait_ready_sensors() # Note: Touch sensors actually have no initialization time
-
-
 
 def play_sound(x):
     if x==1:

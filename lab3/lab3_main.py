@@ -14,7 +14,7 @@ import lab3_drum as drum
 
 if __name__ == "__main__":
     drum.drum_init()
-
+    thread = None
     try:
         while True:
             touch_input = triple_input.collect_input_int()
@@ -24,10 +24,11 @@ if __name__ == "__main__":
             emergency_button()
             if touch_input == 7:
                 print(f"Starting Drum!")
-                drum.start_drum()
+                thread = drum.start_drum(0.5)
 
     except KeyboardInterrupt:
-        drum.stop_drum()
+        if thread:
+            drum.stop_drum(thread)
         
 
         

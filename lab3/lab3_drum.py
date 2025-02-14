@@ -28,18 +28,21 @@ def drum_loop_continuous(half_beat):
     "run drum cycles until stopped"
     while not drum_stop_event.is_set():
         drum_cycle(half_beat)
+    drum_stop_event.clear()
 
 def start_drum(half_beat):
     "start drum thread"
-    global drum_stop_event
-    drum_stop_event.clear()
-    drum_thread = threading.Thread(target=drum_loop_continuous(half_beat))
+    drum_stop_event = threading.Event()
+    print(f"starting with f {half_beat}")
+    drum_thread = threading.Thread(target=drum_loop_continuous,args=(half_beat,))
     drum_thread.start()
+    return drum_thread
 
-def stop_drum():
+def stop_drum(drum_thread):
     "stop the drum thread"
-    global drum_stop_event
     drum_stop_event.set()
+    drum_thread.join()
+    
     motor.set_position(0)
     
 def drum_init():

@@ -18,6 +18,6 @@ def emergency_button():
     "stops everything when pressed, stops drum thread"
     if BUTTON.is_pressed():
         print("EMERGENCY BUTTON PRESSED")
-        drum.stop_drum()
-        exit()
+        raise KeyboardInterrupt
+        print("Stopped")
         
