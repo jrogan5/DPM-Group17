@@ -26,7 +26,6 @@ def collect_color_sensor_data():
     "Collect color sensor data."
    
     try:
-        print("Hello")
         output_file = open(COLOR_SENSOR_DATA_FILE, "w")
         while True:
             

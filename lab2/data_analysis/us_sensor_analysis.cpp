@@ -1,3 +1,11 @@
+/*
+J. Rogan 
+
+Reads a file of data formatted as a column vector and calculates 
+the minimum, maximum, mean, and standard deviation of the data. 
+
+*/
+
 #include <iostream>
 #include <fstream>
 #include <vector>

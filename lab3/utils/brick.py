@@ -643,7 +643,7 @@ class Motor:
     "Motor class for any motor."
     INF = INF
     MAX_SPEED = 1560  # positive or negative degree per second speed
-    MAX_POWER = 100  # positive or negative percent power
+    MAX_POWER = 20  # positive or negative percent power
 
     def __init__(self, port: Literal["A", "B", "C", "D"] | list[str], bp=None):
         """
