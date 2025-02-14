@@ -28,7 +28,7 @@ B6 = sound.Sound(duration=0.3, pitch="B6", volume=100)
 
 wait_ready_sensors() # Note: Touch sensors actually have no initialization time
 
-mary_had_a_little_lab = [E4,D4,C4,D4,E4,E4, E4, E4, D4, D4, D4, D4, E4, G4, G4, G4, E4,D4,C4,D4,E4,E4, E4, E4, D4, D4, E4,D4,C4, C4, C4, C4]
+
 
 def play_sound(x):
     if x==1:
@@ -40,14 +40,16 @@ def play_sound(x):
     elif x==4:
         G4.play()
         
+'''
+FOR TESTING PURPOSES :)
+'''
+mary_had_a_little_lab = [E4,D4,C4,D4,E4,E4, E4, E4, D4, D4, D4, D4, E4, G4, G4, G4, E4,D4,C4,D4,E4,E4, E4, E4, D4, D4, E4,D4,C4, C4, C4, C4]
+
 def play_song(array):
     for note in array:
         note.play()
-        time.sleep(1)
+        time.sleep(0.1)
 
 if __name__=='__main__':
     play_song(mary_had_a_little_lab)
-   # while(1):
-    #    x = input("enter note # (1,2,3,4): ")
-     #   play_sound(int(x))
-        
+
