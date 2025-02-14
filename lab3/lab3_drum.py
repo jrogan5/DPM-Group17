@@ -4,42 +4,41 @@ Controls the drumming mechanism
 
 from utils.brick import Motor, wait_ready_sensors, reset_brick
 import time
+import threading
 motor = Motor("B")
 wait_ready_sensors(True)
+    
+drum_stop_event = threading.Event()
 
-def drum_reset_pos():
-    time.sleep(1)
-    motor.set_position(0)
-    
 def drum_cycle():
-    
-    
+    "hits the drum once"
     motor.set_position(-60) # 100%
-    time.sleep(0.5) # Wait to finish
+    time.sleep(0.5) # wait to finish
     motor.set_position(0)
     time.sleep(0.5)
-    print("done")
+    #print("Hit Drum")
     
-    
-    # initalize for downstroke
-    # motor.set_dps(90) # 90 deg/sec
-    
-    # initalize for upstroke
-    #motor.set_power(-50) # Backwards 50%
-    # motor.set_dps(-720) # Backwards 720 deg/sec
-    
-def drum_loop(n):
-    i = 0
-    while i < n:
+def drum_loop_continuous():
+    "run drum cycles until stopped"
+    while not drum_stop_event.is_set():
         drum_cycle()
-        i += 1
+
+def start_drum():
+    "start drum thread"
+    global drum_stop_event
+    drum_stop_event.clear()
+    drum_thread = threading.Thread(target=drum_loop_continuous)
+    drum_thread.start()
+
+def stop_drum():
+    "stop the drum thread"
+    global drum_stop_event
+    drum_stop_event.set()
     
 def drum_init():
+    "initialize the drum with limits"
     motor.set_limits(30,360)
     motor.reset_encoder()
-    
-
-    
     
 if __name__ == '__main__' :
     try:
