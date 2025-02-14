@@ -1,5 +1,11 @@
-'''
+''' lab3_drum
+This controls the drumming function of the flute.
+Allows for starting/stopping drumming thread
+
 Controls the drumming mechanism 
+
+Authors: David Vo, James Rogan, Lucia Cai
+February 14th, 2025
 '''
 
 from utils.brick import Motor, wait_ready_sensors, reset_brick

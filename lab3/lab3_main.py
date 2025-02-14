@@ -1,3 +1,11 @@
+'''lab3_main
+Main function to run
+Loops and performs tasks when inputs are detected.
+
+Authors: David Vo, Eric Deng, James Rogan
+February 14th, 2025
+'''
+
 import lab3_speaker as speaker
 import lab3_triple_input as triple_input
 from utils.brick import Motor, wait_ready_sensors, reset_brick
@@ -20,7 +28,7 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
         drum.stop_drum()
-        reset_brick()
+        
 
         
         

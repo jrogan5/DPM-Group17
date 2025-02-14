@@ -1,6 +1,8 @@
-'''
-This file contains the code for user to our music device
-using input from 3 tactile switches.
+'''lab3_triple_input
+Maps touch inputs to notes, allows for combinations of inputs.
+
+Author: Eric Deng
+February 14th, 2025
 '''
 
 from utils.brick import TouchSensor, reset_brick, wait_ready_sensors
