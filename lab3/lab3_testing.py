@@ -40,6 +40,15 @@ class SubsystemTest(unittest.TestCase):
         if (input("Did all of the notes play correctly? (y/n)") == "n"):
             self.fail("Note failiure")
         
+        print(f'Starting user input test')
+        while (input("Play a note? (y/n)") == "y"):
+            touch_input = input.collect_input_int()
+            if touch_input not in (0,-1):
+                print(touch_input)
+            speaker.play_sound(touch_input)
+            if (input("Did the note play correctly? (y/n)") == "n"):
+                self.fail("Note failiure")
+        
         # Assert that the note-production subsystem is working correctly
         self.assertEqual(1, 1)
     
@@ -47,12 +56,14 @@ class IntegrationTest(unittest.TestCase):
     def test_integration(self):
         # Test the integration of the drumming and note-production subsystems
         drum.drum_init()
-        for n in range (1,4):
-            touch_input = n
+        touch_input = input.collect_input_int()
+        if touch_input not in (0,-1):
             print(touch_input)
-            speaker.play_sound(touch_input)
-            if touch_input == 7:
-                drum.start_drum(0.5)
+        speaker.play_sound(touch_input)
+        if touch_input == 7:
+            drum.start_drum(0.5)
+
+
         # ask the user if the integration test passed
         if (input("Did the drumming machine and not input integrate well? (y/n)") == "n"):
             self.fail("Integration failiure for drumming machine and note input")
