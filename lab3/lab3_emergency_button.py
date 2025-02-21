@@ -19,5 +19,5 @@ def emergency_button():
     if BUTTON.is_pressed():
         print("EMERGENCY BUTTON PRESSED")
         raise KeyboardInterrupt
-        print("Stopped")
+        print("Stopped") # Unreachable
         

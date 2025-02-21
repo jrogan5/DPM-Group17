@@ -9,6 +9,7 @@ import unittest
 import lab3_drum as drum
 import lab3_speaker as speaker
 import lab3_triple_input as tripleinput
+from lab3_emergency_button import emergency_button
 
 class SubsystemTest(unittest.TestCase):
     def test_drum(self):
@@ -21,8 +22,8 @@ class SubsystemTest(unittest.TestCase):
         #         self.fail("Drumming cycle failiure at frequency {f} Hz")
 
         for f in range(1,4):
-            thread = drum.start_drum(f/2)
-            time.sleep(2)
+            thread = drum.start_drum(f/2, True)
+            time.sleep(10)
             drum.stop_drum(thread)
             # ask the user if the drumming loop executed well mechanically
             if (input(f"Did the continuous drumming loop execute with precise timing at frequency {f} Hz? (y/n)") == "n"):
@@ -52,6 +53,16 @@ class SubsystemTest(unittest.TestCase):
         # Assert that the note-production subsystem is working correctly
         self.assertEqual(1, 1)
     
+    def test_estop(self):
+        t0 = time.time()
+        try:
+            while time.time()-t0 < 20:
+                emergency_button()
+        except KeyboardInterrupt:
+            print(time.time()-t0)
+            self.assertEqual(1, 1)
+        self.fail("Time limit exceeded")
+        
 class IntegrationTest(unittest.TestCase):
     def test_integration(self):
         # Test the integration of the drumming and note-production subsystems
@@ -64,7 +75,7 @@ class IntegrationTest(unittest.TestCase):
                 print(touch_input)
             speaker.play_sound(touch_input)
             if touch_input == 7:
-                thread = drum.start_drum(f/2)
+                thread = drum.start_drum(1/2, False)
         if thread:
             drum.stop_drum(thread)
         print("done")

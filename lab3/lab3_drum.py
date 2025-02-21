@@ -24,17 +24,26 @@ def drum_cycle(half_beat):
     time.sleep(half_beat)
     #print("Hit Drum")
     
-def drum_loop_continuous(half_beat):
+def drum_loop_continuous(half_beat, test=False):
     "run drum cycles until stopped"
+    if test:
+        t0 = time.time()
+        test_timing_ls = []
+
     while not drum_stop_event.is_set():
         drum_cycle(half_beat)
+        if test:
+            test_timing_ls.append(round(time.time()-t0, 1))
+            
+    if test:
+        print(test_timing_ls)
     drum_stop_event.clear()
 
-def start_drum(half_beat):
+def start_drum(half_beat, test=False):
     "start drum thread"
     drum_stop_event = threading.Event()
     print(f"starting with f {half_beat}")
-    drum_thread = threading.Thread(target=drum_loop_continuous,args=(half_beat,))
+    drum_thread = threading.Thread(target=drum_loop_continuous,args=(half_beat, test, ))
     drum_thread.start()
     return drum_thread
 
