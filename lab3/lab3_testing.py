@@ -22,7 +22,6 @@ class SubsystemTest(unittest.TestCase):
                 input(f"Press down the buttons in the {num} binary combination, then press Enter")
                 if collect_input_int() != num:
                     self.fail("button press was not mapped correctly")
-            
         self.assertEqual(1, 1)
     
 
@@ -66,7 +65,7 @@ class SubsystemTest(unittest.TestCase):
         self.fail("Time limit exceeded")
         
 
-    # Sound Subsystem    
+    # Sound Subsystem
     def test_drum(self):
         print("Starting drum SoundTest")
         print("-"*10)

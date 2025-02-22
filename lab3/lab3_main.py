@@ -20,8 +20,8 @@ if __name__ == "__main__":
             touch_input = triple_input.collect_input_int()
             if touch_input not in (0,-1):
                 print(f"Touch Input: {touch_input}")
-            speaker.play_sound(touch_input)
-            emergency_button()
+                speaker.play_sound(touch_input)
+                emergency_button()
             if touch_input == 7:
                 print(f"Starting Drum!")
                 thread = drum.start_drum(0.5)
