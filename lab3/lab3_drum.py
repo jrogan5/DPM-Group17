@@ -36,7 +36,10 @@ def drum_loop_continuous(half_beat, test=False):
             test_timing_ls.append(round(time.time()-t0, 1))
             
     if test:
-        print(test_timing_ls)
+        print(f"The cycles happened at these timings: {test_timing_ls}")
+        delta_ls = [test_timing_ls[i]- test_timing_ls[i-1] for i in range(1, len(test_timing_ls))]
+        mean_delta = round(sum(delta_ls)/len(delta_ls), 2)
+        print(f"the mean frequency was {mean_delta}")
     drum_stop_event.clear()
 
 def start_drum(half_beat, test=False):
