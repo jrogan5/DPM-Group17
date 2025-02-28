@@ -52,6 +52,8 @@ if __name__ == '__main__' :
     try:
         wheels_init()
         thread = start_wheels()
+        while True:
+            pass
     except KeyboardInterrupt:
         print("Done")
         reset_brick() # Turn off everything on the brick's hardware, and reset it
