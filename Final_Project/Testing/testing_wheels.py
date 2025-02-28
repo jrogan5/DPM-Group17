@@ -23,8 +23,9 @@ wheel_stop_event = threading.Event()
 def rotate_continuous(speed=0, test=False):
     "run drum cycles until stopped"
     while not wheel_stop_event.is_set():
-        LEFT_WHEEL.set_position_relative(1)
-        RIGHT_WHEEL.set_position_relative(1)
+        print("Should be running")
+        LEFT_WHEEL.set_position_relative(10)
+        RIGHT_WHEEL.set_position_relative(10)
             
     wheel_stop_event.clear()
 
