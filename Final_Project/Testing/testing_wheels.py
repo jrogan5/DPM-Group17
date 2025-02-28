@@ -28,10 +28,10 @@ def rotate_continuous(speed=0, test=False):
             
     wheel_stop_event.clear()
 
-def start_wheels(half_beat, test=False):
+def start_wheels(speed=0, test=False):
     "start drum thread"
     print(f"starting wheel test")
-    wheel_thread = threading.Thread(target=rotate_continuous,args=(half_beat, test, ))
+    wheel_thread = threading.Thread(target=rotate_continuous,args=(speed, test, ))
     return wheel_thread
 
 def stop_wheel(thread):
