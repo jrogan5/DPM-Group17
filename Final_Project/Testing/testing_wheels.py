@@ -11,8 +11,8 @@ February 14th, 2025
 from utils.brick import Motor, wait_ready_sensors, reset_brick
 import time
 import threading
-LEFT_WHEEL = Motor("A")
-RIGHT_WHEEL = Motor("B")
+LEFT_WHEEL = Motor("B")
+RIGHT_WHEEL = Motor("C")
 
 
 wait_ready_sensors(True)
@@ -20,19 +20,17 @@ wait_ready_sensors(True)
 wheel_stop_event = threading.Event()
 
     
-def rotate_continuous(speed=0, test=False):
+def rotate_continuous(wheel, speed=0, test=False):
     "run drum cycles until stopped"
     while not wheel_stop_event.is_set():
         print("Should be running")
-        LEFT_WHEEL.set_position_relative(10)
-        RIGHT_WHEEL.set_position_relative(10)
-            
+        wheel.set_position_relative(100)
     wheel_stop_event.clear()
 
-def start_wheels(speed=0, test=False):
+def start_wheels(wheel, speed=0, test=False):
     "start drum thread"
     print(f"starting wheel test")
-    wheel_thread = threading.Thread(target=rotate_continuous,args=(speed, test, ))
+    wheel_thread = threading.Thread(target=rotate_continuous,args=(wheel, speed, test, ))
     return wheel_thread
 
 def stop_wheel(thread):
@@ -44,20 +42,23 @@ def stop_wheel(thread):
     
 def wheels_init():
     "initialize the 2 wheels"
-    LEFT_WHEEL.set_limits(30,360)
+    LEFT_WHEEL.set_limits(40,360)
+    RIGHT_WHEEL.set_limits(40, 360)
     LEFT_WHEEL.reset_encoder()
-    RIGHT_WHEEL.set_limits(30, 360)
-    RIGHT_WHEEL.set_limits(30, 360)
+    RIGHT_WHEEL.reset_encoder()
+
 
 if __name__ == '__main__' :
     try:
         wheels_init()
-        thread = start_wheels()
+        threadl = start_wheels(LEFT_WHEEL)
+        threadr = start_wheels(RIGHT_WHEEL)
+        threadl.start()
+        threadr.start()
         while True:
             pass
     except KeyboardInterrupt:
         print("Done")
-        reset_brick() # Turn off everything on the brick's hardware, and reset it
 
     
     
