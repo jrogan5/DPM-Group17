@@ -45,11 +45,17 @@ def rotate_left(left_wheel, right_wheel, speed=0, test=False):
     left_wheel.set_position_relative(-295)
     right_wheel.set_position_relative(295)
     wheel_stop_event.clear()
+    
+def move_forward_1(left_wheel, right_wheel, speed=0, test=False):
+    left_wheel.set_position_relative(1000)
+    right_wheel.set_position_relative(1000)
+    wheel_stop_event.clear()
+    
 
 def start_wheels(wheel, speed=0, test=False):
     "start drum thread"
     print(f"starting wheel test")
-    wheel_thread = threading.Thread(target=rotate_left,args=(LEFT_WHEEL, RIGHT_WHEEL, speed, test, ))
+    wheel_thread = threading.Thread(target=move_forward_1,args=(LEFT_WHEEL, RIGHT_WHEEL, speed, test, ))
     return wheel_thread
 
 def stop_wheel(thread):
