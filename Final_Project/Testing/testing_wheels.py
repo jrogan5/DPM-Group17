@@ -8,7 +8,7 @@ Authors: David Vo, James Rogan, Lucia Cai
 February 14th, 2025
 '''
 
-from utils.brick import Motor, wait_ready_sensors, reset_brick
+from utils.brick import Motor, wait_ready_sensors, reset_brick, TouchSensor
 import time
 import threading
 LEFT_WHEEL = Motor("B")
@@ -19,6 +19,7 @@ wait_ready_sensors(True)
     
 wheel_stop_event = threading.Event()
 
+START_BUTTON = TouchSensor(1)        
     
 def rotate_continuous(wheel, speed=0, test=False):
     "run drum cycles until stopped"
@@ -50,12 +51,27 @@ def move_forward_1(left_wheel, right_wheel, speed=0, test=False):
     left_wheel.set_position_relative(-630)
     right_wheel.set_position_relative(-630)
     wheel_stop_event.clear()
+
+def hard_code_traversal(left_wheel, right_wheel, speed=0, test=False):
+    move_forward_1(left_wheel, right_wheel, speed=0, test=False)
+    time.sleep(5)
+    move_forward_1(left_wheel, right_wheel, speed=0, test=False)
+    time.sleep(5)
+    rotate_right(left_wheel, right_wheel, speed=0, test=False)
+    time.sleep(5)
+    move_forward_1(left_wheel, right_wheel, speed=0, test=False)
+    time.sleep(5)
+    move_forward_1(left_wheel, right_wheel, speed=0, test=False)
+    time.sleep(5)
+    rotate_left(left_wheel, right_wheel, speed=0, test=False)
+    time.sleep(5)
+    move_forward_1(left_wheel, right_wheel, speed=0, test=False)
     
 
 def start_wheels(wheel, speed=0, test=False):
     "start drum thread"
     print(f"starting wheel test")
-    wheel_thread = threading.Thread(target=move_forward_1,args=(LEFT_WHEEL, RIGHT_WHEEL, speed, test, ))
+    wheel_thread = threading.Thread(target=hard_code_traversal,args=(LEFT_WHEEL, RIGHT_WHEEL, speed, test, ))
     return wheel_thread
 
 def stop_wheel(thread):
@@ -76,6 +92,9 @@ def wheels_init():
 if __name__ == '__main__' :
     try:
         wheels_init()
+        wait_ready_sensors(True)
+        while not START_BUTTON.is_pressed():
+            pass
         threadl = start_wheels(LEFT_WHEEL)
         # threadr = start_wheels(RIGHT_WHEEL)
         threadl.start()
