@@ -47,8 +47,8 @@ def rotate_left(left_wheel, right_wheel, speed=0, test=False):
     wheel_stop_event.clear()
     
 def move_forward_1(left_wheel, right_wheel, speed=0, test=False):
-    left_wheel.set_position_relative(1000)
-    right_wheel.set_position_relative(1000)
+    left_wheel.set_position_relative(-630)
+    right_wheel.set_position_relative(-630)
     wheel_stop_event.clear()
     
 
