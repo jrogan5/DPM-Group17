@@ -36,14 +36,20 @@ def rotate_continuous(wheel, speed=0, test=False):
     
 def rotate_right(left_wheel, right_wheel, speed=0, test=False):
     "run drum cycles until stopped"
-    left_wheel.set_position_relative(100)
-    right_wheel.set_position_relative(-100)
+    left_wheel.set_position_relative(295)
+    right_wheel.set_position_relative(-295)
+    wheel_stop_event.clear()
+    
+def rotate_left(left_wheel, right_wheel, speed=0, test=False):
+    "run drum cycles until stopped"
+    left_wheel.set_position_relative(-295)
+    right_wheel.set_position_relative(295)
     wheel_stop_event.clear()
 
 def start_wheels(wheel, speed=0, test=False):
     "start drum thread"
     print(f"starting wheel test")
-    wheel_thread = threading.Thread(target=rotate_right,args=(LEFT_WHEEL, RIGHT_WHEEL, speed, test, ))
+    wheel_thread = threading.Thread(target=rotate_left,args=(LEFT_WHEEL, RIGHT_WHEEL, speed, test, ))
     return wheel_thread
 
 def stop_wheel(thread):
