@@ -37,34 +37,34 @@ def rotate_continuous(wheel, speed=0, test=False):
     
 def rotate_right(left_wheel, right_wheel, speed=0, test=False):
     "run drum cycles until stopped"
-    left_wheel.set_position_relative(295)
-    right_wheel.set_position_relative(-295)
+    left_wheel.set_position_relative(240)
+    right_wheel.set_position_relative(-240)
     wheel_stop_event.clear()
     
 def rotate_left(left_wheel, right_wheel, speed=0, test=False):
     "run drum cycles until stopped"
-    left_wheel.set_position_relative(-295)
-    right_wheel.set_position_relative(295)
+    left_wheel.set_position_relative(-240)
+    right_wheel.set_position_relative(240)
     wheel_stop_event.clear()
     
 def move_forward_1(left_wheel, right_wheel, speed=0, test=False):
-    left_wheel.set_position_relative(-630)
-    right_wheel.set_position_relative(-630)
+    left_wheel.set_position_relative(-660)
+    right_wheel.set_position_relative(-660)
     wheel_stop_event.clear()
 
 def hard_code_traversal(left_wheel, right_wheel, speed=0, test=False):
     move_forward_1(left_wheel, right_wheel, speed=0, test=False)
-    time.sleep(5)
+    time.sleep(3)
     move_forward_1(left_wheel, right_wheel, speed=0, test=False)
-    time.sleep(5)
+    time.sleep(3)
     rotate_right(left_wheel, right_wheel, speed=0, test=False)
-    time.sleep(5)
+    time.sleep(3)
     move_forward_1(left_wheel, right_wheel, speed=0, test=False)
-    time.sleep(5)
+    time.sleep(3)
     move_forward_1(left_wheel, right_wheel, speed=0, test=False)
-    time.sleep(5)
+    time.sleep(3)
     rotate_left(left_wheel, right_wheel, speed=0, test=False)
-    time.sleep(5)
+    time.sleep(3)
     move_forward_1(left_wheel, right_wheel, speed=0, test=False)
     
 
