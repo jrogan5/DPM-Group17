@@ -1,11 +1,9 @@
 ''' 
-This controls the sandbag function of the flute.
-Allows for starting/stopping sandbag thread
+This controls the sandbag deployment mechanism.
+Activates the motor to perform a rotation, which kicks a sandbag into the funnel.
 
-Controls the sandbag mechanism 
-
-Authors: David Vo, James Rogan, Lucia Cai
-February 14th, 2025
+Authors: David Vo, 
+March 17th, 2025
 '''
 
 from utils.brick import Motor, wait_ready_sensors, reset_brick
@@ -14,7 +12,7 @@ import threading
 motor = Motor("B")
 wait_ready_sensors(True)
     
-#sandbag_stop_event = threading.Event()
+#sandbag_stop_event = threading.Event() //to see if needed
 
 def sandbag_cycle(deg):
     "rotates the motor to move one sandbag once"
@@ -37,7 +35,7 @@ if __name__ == '__main__' :
         while True:
             if input("Rotate once?\n") == "y" :
                 sandbag_cycle(90)
-                #sandbag_loop(360)
+                #sandbag_loop(360) //comment this out to perform continuous rotation
 
     except KeyboardInterrupt:
         pass
