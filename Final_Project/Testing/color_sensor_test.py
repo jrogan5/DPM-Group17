@@ -2,7 +2,9 @@
 
 """
 Detect colors from the color sensor. Detect fires (RED) and print out when detected.
-It must be run on the robot.
+It must be ran on the robot.
+Authors: David Vo, 
+March 17th, 2025
 """
 
 from utils.brick import EV3ColorSensor, wait_ready_sensors, TouchSensor, reset_brick
@@ -13,7 +15,6 @@ DELAY_SEC = 0.05
 print("Program start.\nWaiting for sensors to turn on...")
 
 COLOR_SENSOR = EV3ColorSensor(2)
-TOUCH_SENSOR = TouchSensor(1)
 
 wait_ready_sensors(True) 
 
