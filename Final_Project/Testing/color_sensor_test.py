@@ -48,7 +48,7 @@ def is_red(rgb: list[float]) -> bool:
         bool: True if red is dominant, False otherwise.
     """
     r, g, b = rgb
-    return r > 4 * g and r > 4 * b and r > 20  # Threshold for red detection
+    return r > 3 * g and r > 4 * b and r > 10 # Threshold for red detection
 
 def is_green(rgb: list[float]) -> bool:
     """
@@ -61,7 +61,7 @@ def is_green(rgb: list[float]) -> bool:
         bool: True if green is dominant, False otherwise.
     """
     r, g, b = rgb
-    return g > r and g > 2 * b and g > 20  # Threshold for green detection
+    return g > 1.2 * r and g > 2 * b and g > 10  # Threshold for green detection
 
 def initialize_sensor(port: int = COLOR_SENSOR_PORT, mode: str = "component") -> EV3ColorSensor:
     """
@@ -103,6 +103,7 @@ if __name__ == "__main__":
                     if mode == "component":
                         rgb = color_sensor.get_rgb()
                         color = detect_color(color_sensor)
+                        #if color != "none":
                         print(f"RGB: {rgb}, Detected: {color}")
                     else:
                         value = color_sensor.get_value()
