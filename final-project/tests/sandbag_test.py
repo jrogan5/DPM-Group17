@@ -12,7 +12,6 @@ import threading
 motor = Motor("B")
 wait_ready_sensors(True)
     
-#sandbag_stop_event = threading.Event() //to see if needed
 DEFAULT_DEG = 92
 DEFAULT_DPS = 360
 
@@ -90,12 +89,6 @@ def sandbag_testing_mode(curr_state):
     else:
         print("Invalid command, try again")
     
-    
-
-    
-
-    
-
     
 if __name__ == '__main__' :
     try:
