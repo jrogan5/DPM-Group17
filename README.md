@@ -1,4 +1,4 @@
-# Firefighter Rescue Robot - README.md
+# Firefighter Rescue Robot
 
 ## Project Overview
 
