@@ -36,7 +36,7 @@ class SandbagDispenser:
             self.motor.set_limits(DEFAULT_POWER, DEFAULT_DPS)
             self.motor.reset_encoder()
             self.motor.set_position(0)
-            print("Sandbag motor initialized with {DEFAULT_POWER}% power, {DEFAULT_DPS} DPS.")
+            print(f"Sandbag motor initialized with {DEFAULT_POWER}% power, {DEFAULT_DPS} DPS.")
         except Exception as e:
             print(f"Error initializing sandbag motor: {e}")
 

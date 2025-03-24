@@ -136,7 +136,7 @@ if __name__ == "__main__":
 
     # Ask user if they want to create a new CSV file
     flush_csv = input("Do you want to create a new CSV file? (y/n): ").lower()
-    csv_path = "data/color_log.csv"
+    csv_path = "./data/color_log.csv"
     mode = 'w' if flush_csv == 'y' else 'a'
     
     # Open the CSV file once at the start
