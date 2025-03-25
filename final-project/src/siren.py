@@ -22,8 +22,8 @@ class Siren:
         Initializes the siren with two notes at different octaves.
         """
         # Define two notes for the siren (e.g., C4 and C5)
-        self.note1 = sound.Sound(duration=0.3, pitch="C4", volume=100)  # Lower octave
-        self.note2 = sound.Sound(duration=0.3, pitch="C5", volume=100)  # Higher octave
+        self.note1 = sound.Sound(duration=0.5, pitch="C4", volume=80)  # Lower octave
+        self.note2 = sound.Sound(duration=0.5, pitch="C5", volume=80)  # Higher octave
         self.running = False
 
     def start(self):
@@ -34,11 +34,11 @@ class Siren:
         print("Siren started.")
         while self.running:
             self.note1.play()
-            time.sleep(0.3)  # Duration of note1
+            time.sleep(0.5)  # Duration of note1
             if not self.running:
                 break
             self.note2.play()
-            time.sleep(0.3)  # Duration of note2
+            time.sleep(0.5)  # Duration of note2
 
     def stop(self):
         """

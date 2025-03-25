@@ -30,7 +30,7 @@ def main():
     # Add each note as a Sound object with a fixed duration
     note_duration = 0.5  # Quarter note duration in seconds (adjustable for tempo)
     for note in melody_with_octave:
-        sound = Sound(duration=note_duration, pitch=note, volume=50)  # 50% volume
+        sound = Sound(duration=note_duration, pitch=note, volume=80)  # 50% volume
         song.append(sound)
 
     # Compile the song
