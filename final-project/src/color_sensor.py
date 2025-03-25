@@ -12,6 +12,7 @@ from utils.brick import EV3ColorSensor, wait_ready_sensors, reset_brick
 from time import sleep, time
 import os
 from datetime import datetime
+from config import COLOR_SENSOR_PORT
 
 # Constants
 DELAY_SEC = 0.5  # Delay between sensor readings for stability
@@ -21,7 +22,7 @@ class ColorDetector:
     Class to handle color detection using the EV3 Color Sensor.
     Encapsulates sensor initialization, mode setting, and color detection logic.
     """
-    def __init__(self, port=2, mode="component"):
+    def __init__(self, port=COLOR_SENSOR_PORT, mode="component"):
         """
         Initializes the color detector with the specified port and mode.
 
@@ -115,7 +116,7 @@ class ColorDetector:
         self.iteration += 1
         
         if color in ["red", "green"]:
-            print(f"\n{timestamp} - Elapsed: {elapsed_time}s - It: {iteration} - Detected: {color} (RGB: {rgb})")
+            print(f"{timestamp} - Elapsed: {elapsed_time}s - It: {iteration} - Detected: {color} (RGB: {rgb})")
         else:
             print(f"\r{timestamp} - Elapsed: {elapsed_time}s - It: {iteration} - Detected: none (RGB: {rgb})", end=" ")
         
@@ -128,7 +129,7 @@ if __name__ == "__main__":
     Debugging mode: Allows user to select sensor mode and test color detection.
     """
     print("Starting color detection debug mode...")
-    print("Available modes: c (component mode 'default'), a (ambient), r (red), rr (rawred), i (id)")
+    
 
     # Ensure data folder exists
     if not os.path.exists("data"):
@@ -138,7 +139,7 @@ if __name__ == "__main__":
     flush_csv = input("Do you want to create a new CSV file? (y/n): ").lower()
     csv_path = "./data/color_log.csv"
     mode = 'w' if flush_csv == 'y' else 'a'
-    
+    print("Hello?")
     # Open the CSV file once at the start
     with open(csv_path, mode) as csv_file:
         # Write header if creating a new file
@@ -146,9 +147,12 @@ if __name__ == "__main__":
             csv_file.write("timestamp,elapsed_time,iteration,color,R,G,B\n")
 
         # Instantiate the ColorDetector with default port 2
+        print("Hello1")
         detector = ColorDetector()
+        print("Hello2")
         try:
             while True:
+                print("Available modes: c (component mode 'default'), a (ambient), r (red), rr (rawred), i (id)")
                 mode_input = input("Enter the sensor mode to test (or 'q' to quit): ").lower()
                 if mode_input == 'q':
                     print("Exiting debug mode.")
