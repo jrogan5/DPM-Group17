@@ -16,13 +16,14 @@ import time
 from color_sensor import ColorDetector
 from sandbag import SandbagDispenser
 from utils.brick import reset_brick
+from config import COLOR_SENSOR_PORT, SANDBAG_MOTOR_PORT
 
 class RobotController:
     """
     Wrapper class to instantiate and manage all physical components of the robot.
     Monitors color detection and triggers sandbag deployment when a fire is detected.
     """
-    def __init__(self, color_sensor_port=2, csv_path="./data/color_log.csv"):
+    def __init__(self, color_sensor_port=COLOR_SENSOR_PORT, csv_path="./data/color_log.csv"):
         """
         Initializes the robot's components and CSV logging.
 

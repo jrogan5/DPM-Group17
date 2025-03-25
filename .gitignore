@@ -2,3 +2,5 @@ final-project/tests/utils/__pycache__
 final-project/src/utils/__pycache__/
 final-project/src/__pycache__/
 final-project/src/data/color_log.csv
+data/color_log.csv
+final-project/src/data/color_log.csv

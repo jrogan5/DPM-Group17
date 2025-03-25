@@ -116,7 +116,7 @@ class ColorDetector:
         self.iteration += 1
         
         if color in ["red", "green"]:
-            print(f"{timestamp} - Elapsed: {elapsed_time}s - It: {iteration} - Detected: {color} (RGB: {rgb})")
+            print(f"\r{timestamp} - Elapsed: {elapsed_time}s - It: {iteration} - Detected: {color} (RGB: {rgb})")
         else:
             print(f"\r{timestamp} - Elapsed: {elapsed_time}s - It: {iteration} - Detected: none (RGB: {rgb})", end=" ")
         
@@ -147,9 +147,9 @@ if __name__ == "__main__":
             csv_file.write("timestamp,elapsed_time,iteration,color,R,G,B\n")
 
         # Instantiate the ColorDetector with default port 2
-        print("Hello1")
+        
         detector = ColorDetector()
-        print("Hello2")
+        
         try:
             while True:
                 print("Available modes: c (component mode 'default'), a (ambient), r (red), rr (rawred), i (id)")
