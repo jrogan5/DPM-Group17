@@ -99,7 +99,8 @@ class RobotController:
 
             # Skip detection if in cooldown
             if current_time < self.cooldown_until:
-                print(f"\rColor sensor on cooldown until {self.cooldown_until:.2f}...", end=" ")
+                elapsed_time = round(abs(current_time - self.cooldown_until),1)
+                print(f"\rCooldown: [{elapsed_time}/{COOLDOWN_DURATION}s]", end=" ")
                 time.sleep(DELAY_SEC)
                 continue
 
