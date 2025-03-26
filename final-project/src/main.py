@@ -61,7 +61,12 @@ class RobotController:
             self.siren_thread.start()
 
         self.color_thread = threading.Thread(target=self._monitor_colors)
-        self.color_thread.start()
+        self.color_thread.start()   # detect red: fire extinguish / green: obstacle avoidance
+
+        # TODO: Navigation to Kitchen
+        # TODO: Sweeping
+
+
         
         
 
@@ -77,8 +82,9 @@ class RobotController:
         print("Robot stopped. Brick reset.")
 
     def _monitor_colors(self):
-
         red_count = 0  # Counter for consecutive "red" detections
+        green_count = 0
+
         while self.running:
             current_time = time.time()
 
@@ -97,6 +103,7 @@ class RobotController:
                     red_count += 1
                     print(f"\rRED DETECTED ({red_count}/{COLOR_RED_CONFIRMATION_COUNT})", end=" ")
                     # TODO: Halt all robot movements here (not implemented yet)
+                    # TODO: Move robot back to deposit sandbag (not implemented yet)
                     if red_count >= COLOR_RED_CONFIRMATION_COUNT and self.sandbags_deployed < MAX_SANDBAGS:
                         print(f"\nFIRE CONFIRMED! Deploying sandbag...")
                         self.sandbag_dispenser.deploy_sandbag()
@@ -106,8 +113,17 @@ class RobotController:
                         if self.sandbags_deployed == MAX_SANDBAGS:
                             print("ALL SANDBAGS DEPLOYED. Stopping detection.")
                             self.running = False
+
+                if color == "green":
+                    green_count += 1
+                    print(f"\rGREEN DETECTED ({green_count}/{COLOR_GREEN_CONFIRMATION_COUNT})", end=" ")
+                    if green_count >= COLOR_GREEN_CONFIRMATION_COUNT:
+                        print(f"\nOBSTACLE CONFIMRED! Activating obstacle avoidance...")
+                        # TODO: Obstacle Avoidance
+                        green_count = 0  # Reset counter
                 else:
-                    red_count = 0  # Reset if non-red detected
+                    red_count = 0  # Reset if detected
+                    green_count = 0
 
             time.sleep(COLOR_SENSOR_DELAY)
 
@@ -119,6 +135,13 @@ class RobotController:
             if len(rows) <= 1:
                 return None
             return rows[-1][3]
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
 
