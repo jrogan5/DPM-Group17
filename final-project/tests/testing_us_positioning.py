@@ -18,8 +18,8 @@ TUNING_X= 3.4 # ((12.8-9.4)+(15.7-12.3))/2
 TUNING_Y= 3.3 # ((14.8-11.6)+(16.5-13.2))/2
 MAX_X=120 + TUNING_X #cm (see test report for derivation of tuning parameters)
 MAX_Y=120 + TUNING_Y #cm
-CEN_X=4.8  #cm from face of US_X, plus an additional tuning offset
-CEN_Y=8.4  #cm from face of US_Y, plus an additional tuning offset
+CEN_X=6.7  #cm from face of US_X, plus an additional tuning offset
+CEN_Y=8.1  #cm from face of US_Y, plus an additional tuning offset
 
 US_SENSOR_DATA_FILE = "/home/pi/DPM-Group17/DPM-Group17/final-project/tests/test_data/us_sensor.csv"
 
@@ -27,8 +27,8 @@ US_SENSOR_DATA_FILE = "/home/pi/DPM-Group17/DPM-Group17/final-project/tests/test
 print("Program start.\nWaiting for sensors to turn on...")
 
 TOUCH_SENSOR = TouchSensor(3)
-US_X = EV3UltrasonicSensor(2)
-US_Y = EV3UltrasonicSensor(1)
+US_X = EV3UltrasonicSensor(1)
+US_Y = EV3UltrasonicSensor(2)
 
 
 wait_ready_sensors(True) # Input True to see what the robot is trying to initialize! False to be silent.
