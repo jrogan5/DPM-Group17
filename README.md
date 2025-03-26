@@ -241,3 +241,4 @@ Handles navigation, movement control, obstacle avoidance, fire extinguishing, an
 
 ## License
 This project is for educational purposes under the ECSE 211 course at McGill University. All rights reserved by the team.
+
