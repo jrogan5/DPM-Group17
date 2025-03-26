@@ -93,7 +93,7 @@ class RobotController:
                 self.color_detector.print_and_log_color(self.csv_file)
                 color = self.color_detector.detect_color()
 
-                if color == "none":
+                if color == "red":
                     red_count += 1
                     print(f"\rRED DETECTED ({red_count}/{COLOR_RED_CONFIRMATION_COUNT})", end=" ")
                     # TODO: Halt all robot movements here (not implemented yet)
