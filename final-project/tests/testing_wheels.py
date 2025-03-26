@@ -19,7 +19,7 @@ wait_ready_sensors(True)
     
 wheel_stop_event = threading.Event()
 
-START_BUTTON = TouchSensor(1)        
+START_BUTTON = TouchSensor(3)        
     
 def rotate_continuous(wheel, speed=0, test=False):
     "run drum cycles until stopped"
