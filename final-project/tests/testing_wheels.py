@@ -1,6 +1,8 @@
 '''
-E. Deng, J. Rogan
-March 26th, 2025
+Testing Wheels
+Purpose: To test the movement and turning of the robot
+Authors: E. Deng, J. Rogan
+Date: March 26th, 2025
 '''
 
 from utils.brick import Motor, wait_ready_sensors, reset_brick, TouchSensor

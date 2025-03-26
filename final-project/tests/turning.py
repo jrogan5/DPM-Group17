@@ -11,6 +11,7 @@ Author: J. Rogan
 BIG = 192
 MED = BIG/2
 SML = BIG/4
+RW_ADJ = -3 # Right wheel adjustment
 CCW_ADJ = 5
 
 MOVEMENT_MATRIX = {
