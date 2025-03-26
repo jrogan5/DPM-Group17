@@ -7,7 +7,7 @@ Date: March 23, 2025
 """
 
 from utils.brick import Motor, wait_ready_sensors, reset_brick
-from config import SANDBAG_MOTOR_PORT, SANDBAG_DEFAULT_DEG, SANDBAG_DEFAULT_DPS, SANDBAG_DEFAULT_POWER
+from config import SANDBAG_MOTOR_PORT, SANDBAG_DEFAULT_DEG, SANDBAG_DEFAULT_DPS, SANDBAG_DEFAULT_POWER, MAX_SANDBAGS
 import time
 import os
 
@@ -37,7 +37,7 @@ class SandbagDispenser:
             self.sandbags_deployed += 1
             while self.motor.is_moving():
                 time.sleep(0.1)
-            print(f"SANDBAG DEPLOYED! Total sandbags deployed: [{self.sandbags_deployed}]")
+            print(f"SANDBAG DEPLOYED! Total sandbags deployed: [{self.sandbags_deployed}/{MAX_SANDBAGS}]")
         except Exception as e:
             print(f"Error deploying sandbag: {e}")
 

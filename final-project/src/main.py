@@ -93,12 +93,12 @@ class RobotController:
                 self.color_detector.print_and_log_color(self.csv_file)
                 color = self.color_detector.detect_color()
 
-                if color == "red":
+                if color == "none":
                     red_count += 1
                     print(f"\rRED DETECTED ({red_count}/{COLOR_RED_CONFIRMATION_COUNT})", end=" ")
                     # TODO: Halt all robot movements here (not implemented yet)
                     if red_count >= COLOR_RED_CONFIRMATION_COUNT and self.sandbags_deployed < MAX_SANDBAGS:
-                        print(f"\nFIRE CONFIRMED! Deploying sandbag [{self.sandbags_deployed + 1}/{MAX_SANDBAGS}]")
+                        print(f"\nFIRE CONFIRMED! Deploying sandbag...")
                         self.sandbag_dispenser.deploy_sandbag()
                         self.sandbags_deployed += 1
                         self.cooldown_until = current_time + COLOR_COOLDOWN_DURATION  # Start cooldown
