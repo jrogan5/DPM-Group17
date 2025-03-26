@@ -22,24 +22,25 @@ US_X = EV3UltrasonicSensor(1)
 US_Y = EV3UltrasonicSensor(2)
 
 # Path definition
-PATH = [(50, 0), (0, 120), (120, 120), (120, 0), (0, 0)]
+PATH = [(x, 50), (70, y), (x, 70), (120, 0), (0, 0)]
 
 def move_to_room():
     start_pos = get_xy(0)
     cur_pos = start_pos
     print("Start position: ", start_pos)
-    while cur_pos[0] < PATH[0][0]:
+    while cur_pos[1] < PATH[0][1]:
         forward_move(50, LEFT_WHEEL, RIGHT_WHEEL)
         sleep(0.75)
         prev_pos = cur_pos
         cur_pos = get_xy(0)
         print("Current position: ", cur_pos)
-        if (cur_pos[1] > prev_pos[1]):
-            execute_turn(LEFT_WHEEL, RIGHT_WHEEL, "CCW_15")
-            sleep(0.75)
-        if (cur_pos[1] < prev_pos[1]):
-            execute_turn(LEFT_WHEEL, RIGHT_WHEEL, "CW_15")
-            sleep(0.75)
+        if (abs(cur_pos[1] - prev_pos[1]) > 3):
+            if (cur_pos[1] > prev_pos[1]):
+                execute_turn(LEFT_WHEEL, RIGHT_WHEEL, "CCW_15")
+                sleep(0.75)
+            if (cur_pos[1] < prev_pos[1]):
+                execute_turn(LEFT_WHEEL, RIGHT_WHEEL, "CW_15")
+                sleep(0.75)
     print("Reached 1st 90 degree turn.")
 
     execute_turn(LEFT_WHEEL, RIGHT_WHEEL, "CW_90")
