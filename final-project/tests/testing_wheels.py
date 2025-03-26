@@ -8,7 +8,7 @@ Date: March 26th, 2025
 from utils.brick import Motor, wait_ready_sensors, reset_brick, TouchSensor
 import time
 import threading
-from turning import execute_turn
+from turning import execute_turn, RW_ADJ
 LEFT_WHEEL = Motor("D")
 RIGHT_WHEEL = Motor("C")
 
@@ -90,6 +90,12 @@ def wheels_init():
     LEFT_WHEEL.reset_encoder()
     RIGHT_WHEEL.reset_encoder()
 
+
+def forward_move(magnitude, left_wheel, right_wheel):
+    left_wheel.set_position_relative(-magnitude)
+    right_wheel.set_position_relative(-magnitude+RW_ADJ)
+    wheel_stop_event.clear()
+    print("moved forward")
 
 if __name__ == '__main__' :
     try:
