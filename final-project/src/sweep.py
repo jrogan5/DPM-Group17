@@ -14,9 +14,7 @@ def reset_sweep_position(motor: Motor):
 
 def sweep(motor: Motor):
     reset_sweep_position(motor)
-    motor.set_position(80)
-    time.sleep(3)
-    motor.set_position(-80)
+    motor.set_position(160)
     time.sleep(3)
     motor.set_position(0)
     time.sleep(3)
