@@ -2,6 +2,8 @@ from utils.brick import Motor, wait_ready_sensors, reset_brick
 import time
 import threading
 import color_sensor
+import wheels
+from wheels import LEFT_WHEEL, RIGHT_WHEEL
 
 SWEEP_MOTOR = Motor("B")
 wait_ready_sensors(True)
@@ -40,6 +42,10 @@ def full_sweep():
         # Drop block here
         time.sleep(2)
         SWEEP_MOTOR.set_position(0)
+    elif color == "green":
+        wheels.execute_turn(LEFT_WHEEL, RIGHT_WHEEL, "CW_90")
+        wheels.move_forward_1(LEFT_WHEEL, RIGHT_WHEEL)
+        
     
 if __name__ == "__main__":
     full_sweep()
