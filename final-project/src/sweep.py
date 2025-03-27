@@ -45,7 +45,12 @@ def full_sweep():
     elif color == "green":
         wheels.execute_turn(LEFT_WHEEL, RIGHT_WHEEL, "CW_90")
         wheels.move_forward_1(LEFT_WHEEL, RIGHT_WHEEL)
-        
+
+
+
+
     
 if __name__ == "__main__":
-    full_sweep()
+    for i in range(3):
+        full_sweep()
+        wheels.move_forward_1(LEFT_WHEEL, RIGHT_WHEEL)
