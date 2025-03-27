@@ -3,8 +3,8 @@
 # Sensor Ports
 ULTRASONIC_SIDE_PORT = '1'  # X ultrasonic sensor 
 ULTRASONIC_REAR_PORT = '2'  # Y ultrasonic sensor
-COLOR_SENSOR_PORT = '3'  # Port for the color sensor
-TOUCH_SENSOR_PORT = '4'  # Port for the touch sensor (emergency stop)
+COLOR_SENSOR_PORT = '4'  # Port for the color sensor
+TOUCH_SENSOR_PORT = '3'  # Port for the touch sensor (emergency stop)
 
 # Motor Ports
 LEFT_MOTOR_PORT = 'B'  # Port for the left drive motor
