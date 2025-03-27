@@ -15,7 +15,7 @@ from time import sleep
 
 # Constants
 DELAY_SEC = 0.05  # Delay between sensor readings for stability
-COLOR_SENSOR_PORT = 2  # Port where the color sensor is connected
+COLOR_SENSOR_PORT = 4  # Port where the color sensor is connected
 
 def detect_color(sensor: EV3ColorSensor) -> str:
     """
