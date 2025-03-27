@@ -12,7 +12,7 @@ def reset_sweep_position(motor: Motor):
     
 
 def sweep(motor: Motor):
-    reset_sweep_position()
+    reset_sweep_position(motor)
     motor.set_position(100)
     
     

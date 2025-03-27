@@ -5,7 +5,6 @@ Siren module for the Firefighter Rescue Robot.
 Plays a continuous two-note siren sound using the speaker.
 
 Authors: David Vo, James Rogan, Brian Morava (original lab3_speaker)
-Modified by: [Your Name]
 Date: March 24, 2025
 """
 
