@@ -15,26 +15,31 @@ def reset_sweep_position(motor: Motor):
 def sweep(motor: Motor):
     reset_sweep_position(motor)
     motor.set_position(160)
-    time.sleep(3)
+    time.sleep(2)
     motor.set_position(0)
-    time.sleep(3)
+    time.sleep(2)
     
     
-if __name__ == "__main__":
+def full_sweep():
     sweep_motor_thread = threading.Thread(target=sweep, args=(SWEEP_MOTOR, ))
     sweep_motor_thread.start()
     detector = color_sensor.ColorDetector()
     color = None
-    while color != "red":
+    start_time = time.time()
+    while time.time()-start_time < 5:
         color = detector.detect_color()
         print(color)
+        if color in ("red, green"):
+            break
         time.sleep(0.1)
-    pos = SWEEP_MOTOR.get_position()
-    print(pos)
-    sweep_motor_thread.join()
-    print(pos)
-    time.sleep(2)
-    SWEEP_MOTOR.set_position(pos)
-    # Drop block here
-    time.sleep(5)
-    SWEEP_MOTOR.set_position(0)
+    if color == "red":
+        pos = SWEEP_MOTOR.get_position()
+        print(pos)
+        sweep_motor_thread.join()
+        SWEEP_MOTOR.set_position(pos)
+        # Drop block here
+        time.sleep(2)
+        SWEEP_MOTOR.set_position(0)
+    
+if __name__ == "__main__":
+    full_sweep()
