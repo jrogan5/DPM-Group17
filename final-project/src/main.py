@@ -16,6 +16,7 @@ import time
 from color_sensor import ColorDetector, set_csv_path
 from sandbag import SandbagDispenser
 from siren import Siren
+from estop import Estop
 from utils.brick import reset_brick, wait_ready_sensors
 from config import *
 
@@ -39,6 +40,7 @@ class RobotController:
             self.color_detector = ColorDetector()
             self.sandbag_dispenser = SandbagDispenser()
             self.siren = Siren() if self.use_siren else None  # Only instantiate if siren is enabled
+            self.estop = Estop()
             
             self.running = False
             self.sandbags_deployed = 0
@@ -150,8 +152,11 @@ if __name__ == "__main__":
         wait_ready_sensors(True)
         time.sleep(2)
         robot.start()
+
         while robot.running:
+            robot.estop.check_stop()    # checks for estop
             time.sleep(1)
+
     except KeyboardInterrupt:
         print("\nInterrupted by user.")
 
