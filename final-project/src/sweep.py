@@ -41,6 +41,7 @@ def full_sweep():
         print(pos)
         sweep_motor_thread.join()
         SWEEP_MOTOR.set_position(pos)
+        time.sleep(1)
         SANDBAG.deploy_sandbag()
         time.sleep(2)
         SWEEP_MOTOR.set_position(0)
