@@ -26,6 +26,7 @@ SANDBAG_DEFAULT_POWER = 30
 COLOR_SENSOR_DELAY = 0.5  # Delay between color sensor readings (seconds)
 COLOR_CSV_PATH = "src/data/color_log.csv"
 COLOR_RED_CONFIRMATION_COUNT = 10
+COLOR_GREEN_CONFIRMATION_COUNT = 10
 COLOR_COOLDOWN_DURATION = 10.0
 
 # Siren

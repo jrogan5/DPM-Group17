@@ -58,3 +58,31 @@ def move_to_room():
         if (cur_pos[0] < prev_pos[0]):
             execute_turn(LEFT_WHEEL, RIGHT_WHEEL, "CW_15")
             sleep(0.75)
+
+
+if __name__ == "__main__":
+    print("TESTING MODE: General Movement & Turning\n")
+
+    try:
+
+        while True:
+            movement = input("Turn or Move? (t/m): ")
+            if movement == "t":
+                angle = input("Enter angle (15,45,90): ")
+                if angle != "15" or angle != "45" or angle != "90":
+                    continue
+                dir = input("cw/ccw: ")
+                if dir == "cw":
+                    execute_turn(LEFT_WHEEL,RIGHT_WHEEL, "CW_"+angle)
+                elif dir == "ccw":
+                    execute_turn(LEFT_WHEEL,RIGHT_WHEEL, "CCW_"+angle)
+
+            elif movement == "m":
+                dist = input("Enter distance: ")
+                forward_move(int(dist), LEFT_WHEEL, RIGHT_WHEEL)
+                # TODO: move backwards
+
+
+
+    except Exception as e:
+        print(f"Error: {e}")
