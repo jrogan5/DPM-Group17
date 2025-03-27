@@ -4,11 +4,13 @@ import threading
 import color_sensor
 import wheels
 from wheels import LEFT_WHEEL, RIGHT_WHEEL
+import sandbag
 
 SWEEP_MOTOR = Motor("B")
 wait_ready_sensors(True)
 SWEEP_MOTOR.set_limits(15, 360)
 SWEEP_MOTOR.reset_encoder()
+SANDBAG = sandbag.SandbagDispenser()
 
 def reset_sweep_position(motor: Motor):
     motor.set_position(0)
@@ -39,12 +41,14 @@ def full_sweep():
         print(pos)
         sweep_motor_thread.join()
         SWEEP_MOTOR.set_position(pos)
-        # Drop block here
+        SANDBAG.deploy_sandbag()
         time.sleep(2)
         SWEEP_MOTOR.set_position(0)
     elif color == "green":
         wheels.execute_turn(LEFT_WHEEL, RIGHT_WHEEL, "CW_90")
+        time.sleep(2)
         wheels.move_forward_1(LEFT_WHEEL, RIGHT_WHEEL)
+        time.sleep(2)
 
 
 
@@ -53,4 +57,4 @@ def full_sweep():
 if __name__ == "__main__":
     for i in range(3):
         full_sweep()
-        wheels.move_forward_1(LEFT_WHEEL, RIGHT_WHEEL)
+        wheels.forward_move(70, LEFT_WHEEL, RIGHT_WHEEL)
