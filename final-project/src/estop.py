@@ -20,18 +20,26 @@ class Estop:
 
         try: 
             self.sensor = TouchSensor(TOUCH_SENSOR_PORT)
+            self.running = False
         except Exception as e:
             print(f"Error initializing estop: {e}")
 
         else:
             print(f"Initializing 'ESTOP' [{os.path.basename(__file__)}] | Port: [{TOUCH_SENSOR_PORT}]")
-
+        
     
-    def check_stop(self):
-        if self.sensor.is_pressed():
-            print("EStop Activated!\n")
-            reset_brick()
-            raise KeyboardInterrupt
+    def start(self):
+        self.running = True
+        print("Monitoring for EStop...\n")
+        while self.running:
+            if self.sensor.is_pressed():
+                print("EStop Activated!\n")
+                self.running = False
+                reset_brick()
+                raise KeyboardInterrupt
+
+
+
 
 
 if __name__ == "__main__":
@@ -41,9 +49,7 @@ if __name__ == "__main__":
     try:
         estop = Estop()
         wait_ready_sensors(True)
-
-        print("Waiting for EStop input...")
-        estop.check_stop()
+        estop.start()
 
     except Exception as e:
         print(f"Error: {e}")

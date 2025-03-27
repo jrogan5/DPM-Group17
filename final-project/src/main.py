@@ -62,6 +62,9 @@ class RobotController:
             self.siren_thread = threading.Thread(target=self.siren.start)
             self.siren_thread.start()
 
+        self.estop_thread = threading.ThreadError(target=self.estop.start)
+        self.estop_thread.start()
+
         self.color_thread = threading.Thread(target=self._monitor_colors)
         self.color_thread.start()   # detect red: fire extinguish / green: obstacle avoidance
 
@@ -78,6 +81,7 @@ class RobotController:
         if self.use_siren:
             self.siren.stop()
             self.siren_thread.join()
+        self.estop_thread.join()
         self.color_thread.join()
         self.csv_file.close()
         reset_brick()
@@ -154,7 +158,6 @@ if __name__ == "__main__":
         robot.start()
 
         while robot.running:
-            robot.estop.check_stop()    # checks for estop
             time.sleep(1)
 
     except KeyboardInterrupt:
