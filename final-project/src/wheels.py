@@ -88,8 +88,6 @@ def wheels_init():
     "initialize the 2 wheels"
     LEFT_WHEEL.set_limits(30,360)
     RIGHT_WHEEL.set_limits(30, 360)
-    LEFT_WHEEL.reset_encoder()
-    RIGHT_WHEEL.reset_encoder()
 
 
 def forward_move(magnitude, left_wheel, right_wheel):
