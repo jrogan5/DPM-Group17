@@ -46,7 +46,7 @@ def collect_continuous_us_data():
         print("Starting to collect US distance samples")
         while not TOUCH_SENSOR.is_pressed():
             num = int(input("enter turn state: "))
-            data = map_us_data_to_orientation(num)
+            data = get_xy(num)
             if (data is not None): # If None is given, then data collection failed that time
                 print("\n({}, {})".format(*data))
                 # output_file.write(f"({data[0]},{data[1]})\n")
@@ -60,7 +60,7 @@ def collect_continuous_us_data():
         reset_brick() # Turn off everything on the brick's hardware, and reset it
         exit()
 
-def map_us_data_to_orientation(turnstate):
+def get_xy(turnstate):
     if(turnstate==0): # Rotation defined as 0 degrees
             usx_data = US_X.get_value() + CEN_X # Float value in centimeters 0, capped to 255 cm
             usy_data = US_Y.get_value() + CEN_Y

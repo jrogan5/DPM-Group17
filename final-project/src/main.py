@@ -16,6 +16,7 @@ import time
 from color_sensor import ColorDetector, set_csv_path
 from sandbag import SandbagDispenser
 from siren import Siren
+from estop import Estop
 from utils.brick import reset_brick, wait_ready_sensors
 from config import *
 
@@ -39,6 +40,7 @@ class RobotController:
             self.color_detector = ColorDetector()
             self.sandbag_dispenser = SandbagDispenser()
             self.siren = Siren() if self.use_siren else None  # Only instantiate if siren is enabled
+            self.estop = Estop()
             
             self.running = False
             self.sandbags_deployed = 0
@@ -60,8 +62,16 @@ class RobotController:
             self.siren_thread = threading.Thread(target=self.siren.start)
             self.siren_thread.start()
 
+        self.estop_thread = threading.ThreadError(target=self.estop.start)
+        self.estop_thread.start()
+
         self.color_thread = threading.Thread(target=self._monitor_colors)
-        self.color_thread.start()
+        self.color_thread.start()   # detect red: fire extinguish / green: obstacle avoidance
+
+        # TODO: Navigation to Kitchen
+        # TODO: Sweeping
+
+
         
         
 
@@ -71,14 +81,16 @@ class RobotController:
         if self.use_siren:
             self.siren.stop()
             self.siren_thread.join()
+        self.estop_thread.join()
         self.color_thread.join()
         self.csv_file.close()
         reset_brick()
         print("Robot stopped. Brick reset.")
 
     def _monitor_colors(self):
-
         red_count = 0  # Counter for consecutive "red" detections
+        green_count = 0
+
         while self.running:
             current_time = time.time()
 
@@ -97,6 +109,7 @@ class RobotController:
                     red_count += 1
                     print(f"\rRED DETECTED ({red_count}/{COLOR_RED_CONFIRMATION_COUNT})", end=" ")
                     # TODO: Halt all robot movements here (not implemented yet)
+                    # TODO: Move robot back to deposit sandbag (not implemented yet)
                     if red_count >= COLOR_RED_CONFIRMATION_COUNT and self.sandbags_deployed < MAX_SANDBAGS:
                         print(f"\nFIRE CONFIRMED! Deploying sandbag...")
                         self.sandbag_dispenser.deploy_sandbag()
@@ -106,8 +119,17 @@ class RobotController:
                         if self.sandbags_deployed == MAX_SANDBAGS:
                             print("ALL SANDBAGS DEPLOYED. Stopping detection.")
                             self.running = False
+
+                if color == "green":
+                    green_count += 1
+                    print(f"\rGREEN DETECTED ({green_count}/{COLOR_GREEN_CONFIRMATION_COUNT})", end=" ")
+                    if green_count >= COLOR_GREEN_CONFIRMATION_COUNT:
+                        print(f"\nOBSTACLE CONFIMRED! Activating obstacle avoidance...")
+                        # TODO: Obstacle Avoidance
+                        green_count = 0  # Reset counter
                 else:
-                    red_count = 0  # Reset if non-red detected
+                    red_count = 0  # Reset if detected
+                    green_count = 0
 
             time.sleep(COLOR_SENSOR_DELAY)
 
@@ -120,6 +142,13 @@ class RobotController:
                 return None
             return rows[-1][3]
 
+
+
+
+
+
+
+
 if __name__ == "__main__":
 
     try:
@@ -127,8 +156,10 @@ if __name__ == "__main__":
         wait_ready_sensors(True)
         time.sleep(2)
         robot.start()
+
         while robot.running:
             time.sleep(1)
+
     except KeyboardInterrupt:
         print("\nInterrupted by user.")
 
