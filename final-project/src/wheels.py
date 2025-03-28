@@ -81,8 +81,8 @@ def stop_wheel(thread):
     "stop the wheel thread"
     wheel_stop_event.set()
     thread.join()
-    LEFT_WHEEL.set_position(0)
-    RIGHT_WHEEL.set_position(0)
+    LEFT_WHEEL.set_position_relative(0)
+    RIGHT_WHEEL.set_position_relative(0)
     
 def wheels_init():
     "initialize the 2 wheels"

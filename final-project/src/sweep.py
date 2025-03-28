@@ -5,6 +5,7 @@ import color_sensor
 import wheels
 from wheels import LEFT_WHEEL, RIGHT_WHEEL
 import sandbag
+import ctypes
 
 SWEEP_MOTOR = Motor("B")
 wait_ready_sensors(True)
@@ -17,12 +18,29 @@ def reset_sweep_position(motor: Motor):
     time.sleep(2)
 
 def sweep(motor: Motor):
-    reset_sweep_position(motor)
-    motor.set_position(160)
-    time.sleep(2)
-    motor.set_position(0)
-    time.sleep(2)
+    try:
+        reset_sweep_position(motor)
+        motor.set_position(160)
+        time.sleep(2)
+        motor.set_position(0)
+        time.sleep(2)
+    except RuntimeError:
+        print("Thread ended forcibly")
+
+
+def force_kill_thread(thread, exception_type):
+    """Inject an exception into a running thread."""
+    tid = thread.ident
+    if tid is None:
+        raise ValueError("Thread has not started or has already finished.")
     
+    res = ctypes.pythonapi.PyThreadState_SetAsyncExc(
+        ctypes.c_long(tid), ctypes.py_object(exception_type)
+    )
+    
+    if res > 1:  # If more than one thread was affected, reset it
+        ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(tid), None)
+        raise SystemError("PyThreadState_SetAsyncExc failed.")
     
 def full_sweep():
     sweep_motor_thread = threading.Thread(target=sweep, args=(SWEEP_MOTOR, ))
@@ -39,7 +57,7 @@ def full_sweep():
     if color == "red":
         pos = SWEEP_MOTOR.get_position()
         print(pos)
-        sweep_motor_thread.join()
+        force_kill_thread(sweep_motor_thread, RuntimeError)
         SWEEP_MOTOR.set_position(pos)
         time.sleep(1)
         SANDBAG.deploy_sandbag()
