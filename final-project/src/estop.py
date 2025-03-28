@@ -30,7 +30,7 @@ class Estop:
     
     def start(self):
         self.running = True
-        print("Monitoring for EStop...\n")
+        print("EStop started!")
         while self.running:
             if self.sensor.is_pressed():
                 print("EStop Activated!\n")

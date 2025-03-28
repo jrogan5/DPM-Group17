@@ -5,8 +5,8 @@ Main wrapper script for the Firefighter Rescue Robot.
 Integrates ColorDetector, SandbagDispenser, and Siren classes to detect fires,
 deploy sandbags, and play a siren, with modular constants and threading.
 
-Author: David Vo
-Date: March 24, 2025
+Author: David Vo, Lucia Cai
+Date: March 28, 2025
 """
 
 import os
@@ -25,9 +25,15 @@ class RobotController:
     def __init__(self):
 
         try:
+            "ESTOP"
+            self.estop = Estop()
+            
+            "SIREN"
             use_siren = True
             self.use_siren = use_siren
-
+            self.siren = Siren() if self.use_siren else None  
+            
+            "CSV"
             mode = 'w' 
             self.csv_path = set_csv_path(COLOR_CSV_PATH)
             self.csv_file = open(self.csv_path, mode, newline='')
@@ -36,16 +42,17 @@ class RobotController:
                 self.csv_file.write("timestamp,elapsed_time,iteration,color,R,G,B\n")
                 self.csv_file.flush()
 
-            # Initialize components
+            "COLOR SENSOR"
             self.color_detector = ColorDetector()
-            self.sandbag_dispenser = SandbagDispenser()
-            self.siren = Siren() if self.use_siren else None  # Only instantiate if siren is enabled
-            self.estop = Estop()
-            
-            self.running = False
-            self.sandbags_deployed = 0
+            self.cooldown_until = 0
             self.lock = threading.Lock()
-            self.cooldown_until = 0  # Timestamp when cooldown ends
+            
+            "SANDBAG DISPENSER"
+            self.sandbag_dispenser = SandbagDispenser()
+            self.sandbags_deployed = 0
+            
+            "ROBOT"
+            self.running = False
 
         except Exception as e:
             print(f"Error initializing robot: {e}")
@@ -55,16 +62,21 @@ class RobotController:
 
         
     def start(self):
-        print("Robot started! Monitoring for fires... Press Ctrl+C to stop.")
+        print("Robot started!")
+        
+        "ROBOT"
         self.running = True
 
+        "ESTOP"
+        self.estop_thread = threading.Thread(target=self.estop.start)
+        self.estop_thread.start()
+
+        "SIREN"
         if self.use_siren:
             self.siren_thread = threading.Thread(target=self.siren.start)
             self.siren_thread.start()
 
-        self.estop_thread = threading.Thread(target=self.estop.start)
-        self.estop_thread.start()
-
+        "COLOR SENSOR"
         self.color_thread = threading.Thread(target=self._monitor_colors)
         self.color_thread.start()   # detect red: fire extinguish / green: obstacle avoidance
 
@@ -72,19 +84,25 @@ class RobotController:
         # TODO: Sweeping
 
 
-        
-        
-
     def stop(self):
   
+        "ROBOT"
         self.running = False
+        
+        "SIREN"
         if self.use_siren:
             self.siren.stop()
             self.siren_thread.join()
-        self.estop.stop()
-        self.estop_thread.join()
+            
+        "COLOR SENSOR"
         self.color_thread.join()
         self.csv_file.close()
+        
+        "ESTOP"
+        self.estop.stop()
+        self.estop_thread.join()
+        
+        "RESET"
         reset_brick()
         print("Robot stopped. Brick reset.")
 
@@ -92,6 +110,7 @@ class RobotController:
         red_count = 0  # Counter for consecutive "red" detections
         green_count = 0
 
+        print("Color sensor started!")
         while self.running:
             current_time = time.time()
 
@@ -121,7 +140,7 @@ class RobotController:
                             print("ALL SANDBAGS DEPLOYED. Stopping detection.")
                             self.running = False
 
-                elif color == "green":
+                elif color == "none":
                     green_count += 1
                     print(f"\rGREEN DETECTED ({green_count}/{COLOR_GREEN_CONFIRMATION_COUNT})", end=" ")
                     if green_count >= COLOR_GREEN_CONFIRMATION_COUNT:
@@ -134,28 +153,11 @@ class RobotController:
 
             time.sleep(COLOR_SENSOR_DELAY)
 
-    def read_last_color_from_csv(self):
-
-        with open(self.csv_path, 'r') as f:
-            reader = csv.reader(f)
-            rows = list(reader)
-            if len(rows) <= 1:
-                return None
-            return rows[-1][3]
-
-
-
-
-
-
-
-
 if __name__ == "__main__":
 
     try:
         robot = RobotController()
         wait_ready_sensors(True)
-        time.sleep(2)
         robot.start()
 
         while robot.running:
