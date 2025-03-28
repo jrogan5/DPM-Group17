@@ -8,6 +8,8 @@ Date: March 26th, 2025
 from utils.brick import Motor, wait_ready_sensors, reset_brick, TouchSensor
 import time
 import threading
+import sweep
+
 from turning import execute_turn, RW_ADJ
 LEFT_WHEEL = Motor("D")
 RIGHT_WHEEL = Motor("C")
@@ -69,6 +71,8 @@ def hard_code_traversal(left_wheel, right_wheel, speed=0, test=False):
     execute_turn(left_wheel, right_wheel, "CCW_90")
     time.sleep(2)
     move_forward_1(left_wheel, right_wheel, speed=0, test=False)
+    time.sleep(2)
+    sweep.full_sweep(sweep.SWEEP_MOTOR)
     
 
 def start_wheels(wheel, speed=0, test=False):
@@ -107,8 +111,11 @@ if __name__ == '__main__' :
             pass
         threadl = start_wheels(LEFT_WHEEL)
         # threadr = start_wheels(RIGHT_WHEEL)
+
         threadl.start()
         # threadr.start()
+
+
         while True:
             pass
     except KeyboardInterrupt:

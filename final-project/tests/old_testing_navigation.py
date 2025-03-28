@@ -29,7 +29,7 @@ def move_to_room():
     cur_pos = start_pos
     print("Start position: ", start_pos)
     while True:
-        forward_move(50, LEFT_WHEEL, RIGHT_WHEEL)
+        forward_move(1000, LEFT_WHEEL, RIGHT_WHEEL)
         sleep(0.75)
         if cur_pos[1] < PATH[0][1]:
             stop_wheel()

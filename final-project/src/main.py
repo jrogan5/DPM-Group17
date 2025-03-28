@@ -15,7 +15,7 @@ import threading
 import time
 from color_sensor import ColorDetector, set_csv_path
 from sandbag import SandbagDispenser
-from siren import Siren
+#from siren import Siren
 from estop import Estop
 from utils.brick import reset_brick, wait_ready_sensors
 from config import *
@@ -29,7 +29,7 @@ class RobotController:
             self.estop = Estop()
             
             "SIREN"
-            use_siren = True
+            use_siren = False
             self.use_siren = use_siren
             self.siren = Siren() if self.use_siren else None  
             
