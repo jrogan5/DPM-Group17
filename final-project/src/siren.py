@@ -25,7 +25,7 @@ class Siren:
     def start(self):
 
         self.running = True
-        print("Siren started.")
+        print("Siren started!")
         while self.running:
             self.note1.play()
             time.sleep(SIREN_DURATION)  # Duration of note1
@@ -46,6 +46,10 @@ if __name__ == "__main__":
     try:
         siren = Siren()
         siren.start()
+        
+    except Exception as e:
+        print(f"Error: {e}")
+        
     except KeyboardInterrupt:
         siren.stop()
         print("Test interrupted.")

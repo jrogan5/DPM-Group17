@@ -30,17 +30,19 @@ class Estop:
     
     def start(self):
         self.running = True
-        print("Monitoring for EStop...\n")
+        print("EStop started!")
         while self.running:
             if self.sensor.is_pressed():
                 print("EStop Activated!\n")
                 self.running = False
-                reset_brick()
-                raise KeyboardInterrupt
+                raise KeyboardInterrupt 
 
+            time.sleep(1)
 
-
-
+    def stop(self):
+        self.running = False
+        print("EStop deactivated.")
+             
 
 if __name__ == "__main__":
 
@@ -53,3 +55,9 @@ if __name__ == "__main__":
 
     except Exception as e:
         print(f"Error: {e}")
+    except KeyboardInterrupt:
+        print("\nTesting mode interrupted.")
+    finally:
+        estop.stop()
+        reset_brick()
+        print("EStop test completed.")
