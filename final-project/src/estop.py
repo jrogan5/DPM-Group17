@@ -35,6 +35,9 @@ class Estop:
             if self.sensor.is_pressed():
                 print("EStop Activated!\n")
                 self.running = False
+                raise KeyboardInterrupt 
+
+            time.sleep(1)
 
     def stop(self):
         self.running = False
