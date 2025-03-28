@@ -49,7 +49,6 @@ class RobotController:
             
             "SANDBAG DISPENSER"
             self.sandbag_dispenser = SandbagDispenser()
-            self.sandbags_deployed = 0
             
             "ROBOT"
             self.running = False
@@ -130,17 +129,16 @@ class RobotController:
                     print(f"\rRED DETECTED ({red_count}/{COLOR_RED_CONFIRMATION_COUNT})", end=" ")
                     # TODO: Halt all robot movements here (not implemented yet)
                     # TODO: Move robot back to deposit sandbag (not implemented yet)
-                    if red_count >= COLOR_RED_CONFIRMATION_COUNT and self.sandbags_deployed < MAX_SANDBAGS:
+                    if red_count >= COLOR_RED_CONFIRMATION_COUNT and self.sandbag_dispenser.sandbags_deployed < MAX_SANDBAGS:
                         print(f"\nFIRE CONFIRMED! Deploying sandbag...")
                         self.sandbag_dispenser.deploy_sandbag()
-                        self.sandbags_deployed += 1
                         self.cooldown_until = current_time + COLOR_COOLDOWN_DURATION  # Start cooldown
                         red_count = 0  # Reset counter
-                        if self.sandbags_deployed == MAX_SANDBAGS:
+                        if self.sandbag_dispenser.sandbags_deployed == MAX_SANDBAGS:
                             print("ALL SANDBAGS DEPLOYED. Stopping detection.")
                             self.running = False
 
-                elif color == "none":
+                elif color == "green":
                     green_count += 1
                     print(f"\rGREEN DETECTED ({green_count}/{COLOR_GREEN_CONFIRMATION_COUNT})", end=" ")
                     if green_count >= COLOR_GREEN_CONFIRMATION_COUNT:
