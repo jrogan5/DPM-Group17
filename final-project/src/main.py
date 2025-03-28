@@ -62,7 +62,7 @@ class RobotController:
             self.siren_thread = threading.Thread(target=self.siren.start)
             self.siren_thread.start()
 
-        self.estop_thread = threading.ThreadError(target=self.estop.start)
+        self.estop_thread = threading.Thread(target=self.estop.start)
         self.estop_thread.start()
 
         self.color_thread = threading.Thread(target=self._monitor_colors)
@@ -81,6 +81,7 @@ class RobotController:
         if self.use_siren:
             self.siren.stop()
             self.siren_thread.join()
+        self.estop.stop()
         self.estop_thread.join()
         self.color_thread.join()
         self.csv_file.close()
@@ -120,7 +121,7 @@ class RobotController:
                             print("ALL SANDBAGS DEPLOYED. Stopping detection.")
                             self.running = False
 
-                if color == "green":
+                elif color == "green":
                     green_count += 1
                     print(f"\rGREEN DETECTED ({green_count}/{COLOR_GREEN_CONFIRMATION_COUNT})", end=" ")
                     if green_count >= COLOR_GREEN_CONFIRMATION_COUNT:
