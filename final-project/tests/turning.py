@@ -16,7 +16,7 @@ CCW_ADJ = 5
 BAT_34_ADJ = 0 # Battery 34 adjustment
 
 MOVEMENT_MATRIX = {
-    BAT_33: {
+    "BAT_33": {
     "CCW_90": (BIG+CCW_ADJ, -(BIG+CCW_ADJ)),
     "CCW_45": (MED+CCW_ADJ, -(MED+CCW_ADJ)),
     "CCW_15": (SML+CCW_ADJ, -(SML+CCW_ADJ)),
@@ -24,7 +24,7 @@ MOVEMENT_MATRIX = {
     "CW_45": (-MED, MED),
     "CW_15": (-SML, SML)
     },
-    BAT_34: {
+    "BAT_34": {
     "CCW_90": (BIG+CCW_ADJ + BAT_34_ADJ, -(BIG+CCW_ADJ + BAT_34_ADJ)),
     "CCW_45": (MED+CCW_ADJ+BAT_34_ADJ, -(MED+CCW_ADJ+BAT_34_ADJ)),
     "CCW_15": (SML+CCW_ADJ+BAT_34_ADJ, -(SML+CCW_ADJ+BAT_34_ADJ)),
