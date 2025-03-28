@@ -28,9 +28,12 @@ def move_to_room():
     start_pos = get_xy(0)
     cur_pos = start_pos
     print("Start position: ", start_pos)
-    while cur_pos[1] < PATH[0][1]:
+    while True:
         forward_move(50, LEFT_WHEEL, RIGHT_WHEEL)
         sleep(0.75)
+        if cur_pos[1] < PATH[0][1]:
+            stop_wheel()
+            break
         prev_pos = cur_pos
         cur_pos = get_xy(0)
         print("Current position: ", cur_pos)
@@ -58,6 +61,8 @@ def move_to_room():
         if (cur_pos[0] < prev_pos[0]):
             execute_turn(LEFT_WHEEL, RIGHT_WHEEL, "CW_15")
             sleep(0.75)
+
+
 
 
 if __name__ == "__main__":
