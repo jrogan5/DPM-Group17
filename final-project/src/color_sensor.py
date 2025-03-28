@@ -59,7 +59,7 @@ class ColorDetector:
     def is_green(self, rgb):
 
         r, g, b = rgb
-        return g > 1.2 * r and g > 2 * b and g > 10
+        return g > 0.8 * r and g > 2 * b and g > 10
 
     def print_and_log_color(self, csv_file):
 
