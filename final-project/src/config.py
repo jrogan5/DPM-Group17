@@ -45,3 +45,7 @@ TILE_ANG = -660
 RW_ADJ = -3 # Right wheel adjustment
 CCW_ADJ = 5
 BAT_34_ADJ = 0 # Battery 34 adjustment
+
+# Sweeper
+SWEEP_RANGE = 160
+REFRESH_RATE = 0.1
