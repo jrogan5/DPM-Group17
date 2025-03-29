@@ -10,7 +10,7 @@ TOUCH_SENSOR_PORT = '3'  # Port for the touch sensor (emergency stop)
 LEFT_MOTOR_PORT = 'D'  # Port for the left drive motor
 RIGHT_MOTOR_PORT = 'C'  # Port for the right drive motor
 SANDBAG_MOTOR_PORT = 'A'  # Port for the sandbag deployment motor
-SWEEP_PORT = 'B'
+SWEEP_MOTOR_PORT = 'B'
 
 # Physical Constants
 WHEEL_RADIUS = 2.8  # Wheel radius in cm
@@ -34,3 +34,14 @@ COLOR_COOLDOWN_DURATION = 10.0
 SIREN_DURATION = 0.5  # Duration of between siren note (seconds)
 SIREN_NOTE_DURATION = 0.5  # Duration of each siren note (seconds)
 SIREN_VOLUME = 80  # Volume of the siren (0-100)
+
+# Wheels
+BATTERY_NUM: 33
+
+ANG_90 = 192
+RW_ADJ = -3 # Right wheel adjustment
+CCW_ADJ = 5
+TILE_ANG = -660
+RW_ADJ = -3 # Right wheel adjustment
+CCW_ADJ = 5
+BAT_34_ADJ = 0 # Battery 34 adjustment

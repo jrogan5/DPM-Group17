@@ -8,114 +8,91 @@ Date: March 26th, 2025
 from utils.brick import Motor, wait_ready_sensors, reset_brick, TouchSensor
 import time
 import threading
-import sweep
+from config import *
 
-from turning import execute_turn, RW_ADJ
-LEFT_WHEEL = Motor("D")
-RIGHT_WHEEL = Motor("C")
-
-
-wait_ready_sensors(True)
-
+class Wheels():
     
-wheel_stop_event = threading.Event()
-
-START_BUTTON = TouchSensor(3)        
+    MOVEMENT_MATRIX: dict = {
+        33: {
+            "CCW_90": (ANG_90+CCW_ADJ, -(ANG_90+CCW_ADJ)),
+            "CW_90": (-ANG_90, ANG_90)
+        },
+        34: {
+            "CCW_90": (ANG_90+CCW_ADJ + BAT_34_ADJ, -(ANG_90+CCW_ADJ + BAT_34_ADJ)),
+            "CW_90": (-(ANG_90+BAT_34_ADJ), ANG_90+BAT_34_ADJ)
+            }
+        }
     
-def rotate_continuous(wheel, speed=0, test=False):
-    "run drum cycles until stopped"
-    while not wheel_stop_event.is_set():
-        print("Should be running")
-        wheel.set_position_relative(100)
-    wheel_stop_event.clear()
+    def __init__(self, debug=False):
+        self.LEFT_WHEEL: Motor = Motor(LEFT_MOTOR_PORT)
+        self.RIGHT_WHEEL: Motor = Motor(RIGHT_MOTOR_PORT)
+        self.START_BUTTON: TouchSensor = TouchSensor(TOUCH_SENSOR_PORT)
+        self.debug = debug
+        self.wheels_init()
+        wait_ready_sensors(True)
+        print("Wheels are ready to use")
+
+    def wheels_init(self):
+        "initialize the 2 wheels"
+        self.LEFT_WHEEL.set_limits(30,360)
+        self.RIGHT_WHEEL.set_limits(30, 360)
+
+    def rotate_wheel(self, magnitude: int, wheel: Motor)->threading.Thread:
+        thread = threading.Thread(target=wheel.set_position_relative, args=(magnitude,))
+        thread.start()
+        return thread
+
+    def move_forward(self, magnitude:int)->tuple[threading.Thread]:
+        left_thread = self.rotate_wheel(-magnitude, self.LEFT_WHEEL)
+        right_thread = self.rotate_wheel(-magnitude+RW_ADJ, self.RIGHT_WHEEL)
+        if self.debug:
+            print("moved forward")
+        return left_thread, right_thread
+
+    def move_forward_1(self):
+        self.LEFT_WHEEL.set_position_relative(TILE_ANG)
+        self.RIGHT_WHEEL.set_position_relative(TILE_ANG)
+        wheels.wheel_stop_event.clear()
+        if self.debug:
+            print("moved forward")
+            
+    def execute_turn(self, movement:str)->tuple[threading.Thread]:
+        """Executes a predefined turn based on battery life."""
+        if movement not in wheels.MOVEMENT_MATRIX[BATTERY_NUM]:
+            print("Invalid movement command.")
+            return
+        left_magnitude, right_magnitude = wheels.MOVEMENT_MATRIX[BATTERY_NUM][movement]
+        left_thread = self.rotate_wheel(left_magnitude, self.LEFT_WHEEL)
+        right_thread = self.rotate_wheel(right_magnitude, self.RIGHT_WHEEL)
+        if self.debug:
+            print(f"Executing {movement} with values {left_magnitude}, {right_magnitude}. ")
+        return left_thread, right_thread
+
+    def wait_between_moves(self)->None:
+        time.sleep(0.15)
+        while self.LEFT_WHEEL.is_moving() or self.RIGHT_WHEEL.is_moving():
+            pass
+
+    def hard_code_traversal(self)->None:
+        self.move_forward(3*TILE_ANG)
+        self.wait_between_moves()
+        self.execute_turn("CW_90")
+        self.wait_between_moves()
+        self.move_forward(3*TILE_ANG)
+        self.wait_between_moves()
+        self.execute_turn("CCW_90")
+        self.wait_between_moves()
+        self.move_forward_1()
+        self.wait_between_moves()
     
-def rotate_continuous(wheel, speed=0, test=False):
-    "run drum cycles until stopped"
-    while not wheel_stop_event.is_set():
-        print("Should be running")
-        wheel.set_position_relative(100)
-    wheel_stop_event.clear()
-    
-def rotate_right(left_wheel, right_wheel, speed=0, test=False):
-    "run drum cycles until stopped"
-    left_wheel.set_position_relative(240)
-    right_wheel.set_position_relative(-240)
-    wheel_stop_event.clear()
-    
-def rotate_left(left_wheel, right_wheel, speed=0, test=False):
-    "run drum cycles until stopped"
-    left_wheel.set_position_relative(-240)
-    right_wheel.set_position_relative(240)
-    wheel_stop_event.clear()
-    
-def move_forward_1(left_wheel, right_wheel, speed=0, test=False):
-    left_wheel.set_position_relative(-660)
-    right_wheel.set_position_relative(-660)
-    wheel_stop_event.clear()
-    print("moved forward")
-
-def hard_code_traversal(left_wheel, right_wheel, speed=0, test=False):
-    time.sleep(1)
-    move_forward_1(left_wheel, right_wheel, speed=0, test=False)
-    time.sleep(2)
-    move_forward_1(left_wheel, right_wheel, speed=0, test=False)
-    time.sleep(2)
-    execute_turn(left_wheel, right_wheel, "CW_90")
-    time.sleep(2)
-    move_forward_1(left_wheel, right_wheel, speed=0, test=False)
-    time.sleep(2)
-    move_forward_1(left_wheel, right_wheel, speed=0, test=False)
-    time.sleep(2)
-    move_forward_1(left_wheel, right_wheel, speed=0, test=False)
-    time.sleep(2)
-    execute_turn(left_wheel, right_wheel, "CCW_90")
-    time.sleep(2)
-    move_forward_1(left_wheel, right_wheel, speed=0, test=False)
-    time.sleep(2)
-    sweep.full_sweep(sweep.SWEEP_MOTOR)
-    
-
-def start_wheels(wheel, speed=0, test=False):
-    "start drum thread"
-    print(f"starting wheel test")
-    wheel_thread = threading.Thread(target=hard_code_traversal,args=(LEFT_WHEEL, RIGHT_WHEEL, speed, test, ))
-    return wheel_thread
-
-def stop_wheel(thread):
-    "stop the wheel thread"
-    wheel_stop_event.set()
-    thread.join()
-    LEFT_WHEEL.set_position_relative(0)
-    RIGHT_WHEEL.set_position_relative(0)
-    
-def wheels_init():
-    "initialize the 2 wheels"
-    LEFT_WHEEL.set_limits(30,360)
-    RIGHT_WHEEL.set_limits(30, 360)
-
-
-def forward_move(magnitude, left_wheel, right_wheel):
-    left_wheel.set_position_relative(-magnitude)
-    right_wheel.set_position_relative(-magnitude+RW_ADJ)
-    wheel_stop_event.clear()
-    print("moved forward")
-
-
-wheels_init()
-wait_ready_sensors(True)
 
 if __name__ == '__main__' :
     try:
-
-        while not START_BUTTON.is_pressed():
+        wheels = Wheels()
+        while not wheels.START_BUTTON.is_pressed():
             pass
-        threadl = start_wheels(LEFT_WHEEL)
-        # threadr = start_wheels(RIGHT_WHEEL)
-
-        threadl.start()
-        # threadr.start()
-
-
+        wheels.hard_code_traversal()
+        
         while True:
             pass
     except KeyboardInterrupt:

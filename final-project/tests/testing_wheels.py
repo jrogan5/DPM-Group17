@@ -14,6 +14,7 @@ RIGHT_WHEEL = Motor("C")
 
 
 wait_ready_sensors(True)
+
     
 wheel_stop_event = threading.Event()
 
@@ -97,10 +98,12 @@ def forward_move(magnitude, left_wheel, right_wheel):
     wheel_stop_event.clear()
     print("moved forward")
 
+
+wheels_init()
+wait_ready_sensors(True)
+
 if __name__ == '__main__' :
     try:
-        wheels_init()
-        wait_ready_sensors(True)
         while not START_BUTTON.is_pressed():
             pass
         threadl = start_wheels(LEFT_WHEEL)
