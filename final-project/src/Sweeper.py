@@ -3,7 +3,7 @@ import time
 import threading
 
 from color_sensor import ColorDetector
-from Wheels import Wheels
+from wheels import Wheels
 from sandbag import SandbagDispenser
 from config import *
 from helper_functions import *
@@ -84,5 +84,10 @@ if __name__ == "__main__":
         sweeper.full_sweep()
         sweeper.wait_between_moves()
         sweeper.wheels.move_forward(70)
+<<<<<<< HEAD
         time.sleep(0.1)
     sweeper.reset_sweep_position()
+=======
+    # TODO: Test number of sweep for 1 square
+    # TODO: Do it for it for whole Kitchen
+>>>>>>> 861e63786a5a1b394d69940e624a26ab131abda3
