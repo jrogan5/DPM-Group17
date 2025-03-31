@@ -52,7 +52,6 @@ class Wheels():
     def move_forward_1(self):
         self.LEFT_WHEEL.set_position_relative(-TILE_ANG)
         self.RIGHT_WHEEL.set_position_relative(-TILE_ANG)
-        wheels.wheel_stop_event.clear()
         if self.debug:
             print("moved forward")
             
@@ -91,7 +90,8 @@ if __name__ == '__main__' :
         wheels = Wheels(debug=True)
         while not wheels.START_BUTTON.is_pressed():
             pass
-        # wheels.move_forward_1()
+        wheels.move_forward_1()
+        wheels.wait_between_moves()
         wheels.execute_turn("CCW_90")
         wheels.wait_between_moves()
         wheels.execute_turn("CW_90")
