@@ -19,6 +19,7 @@ class Sweeper:
         self.SANDBAG_DISPENSER: SandbagDispenser = SandbagDispenser()
         self.DETECTOR = ColorDetector()
         self.wheels = Wheels(debug)
+        self.debug = debug
         wait_ready_sensors(True)
 
 
@@ -26,6 +27,7 @@ class Sweeper:
         time.sleep(0.15)
         while self.SWEEP_MOTOR.is_moving():
             pass
+        self.wheels.wait_between_moves()
         
     def reset_sweep_position(self)->None:
         self.SWEEP_MOTOR.set_position(0)
@@ -33,7 +35,6 @@ class Sweeper:
 
     def sweep_motion(self):
         try:
-            self.reset_sweep_position()
             curr_pos = self.SWEEP_MOTOR.get_position() 
             if -5 < curr_pos and curr_pos < 5:
                 self.SWEEP_MOTOR.set_position(SWEEP_RANGE)
@@ -46,9 +47,11 @@ class Sweeper:
         
 
     def full_sweep(self):
-        sweep_motor_thread = threading.Thread(target=self.sweep_motion, args=(None ,))
+        sweep_motor_thread = threading.Thread(target=self.sweep_motion)
         sweep_motor_thread.start()
         color = None
+        if self.debug:
+            print("full sweep started")
         while sweep_motor_thread.is_alive(): # To test in person
             color = self.DETECTOR.detect_color()
             if self.debug:
@@ -67,14 +70,19 @@ class Sweeper:
             self.reset_sweep_position()
         elif color == "green":
             self.wheels.execute_turn("CW_90")
-            time.sleep(2)
+            self.wait_between_moves()
             self.wheels.move_forward(100)
-            time.sleep(2)
+            self.wait_between_moves()
 
 
 if __name__ == "__main__":
-    sweeper = Sweeper()
-    for i in range(3):
+    sweeper = Sweeper(True)
+    #sweeper.sweep_motion()
+    #sweeper.wait_between_moves()
+    #sweeper.sweep_motion()
+    for i in range(4):
         sweeper.full_sweep()
         sweeper.wait_between_moves()
         sweeper.wheels.move_forward(70)
+        time.sleep(0.1)
+    sweeper.reset_sweep_position()

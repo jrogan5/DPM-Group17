@@ -36,12 +36,12 @@ SIREN_NOTE_DURATION = 0.5  # Duration of each siren note (seconds)
 SIREN_VOLUME = 80  # Volume of the siren (0-100)
 
 # Wheels
-BATTERY_NUM: 33
+BATTERY_NUM = 33
 
 ANG_90 = 192
 RW_ADJ = -3 # Right wheel adjustment
 CCW_ADJ = 5
-TILE_ANG = -660
+TILE_ANG = 660
 RW_ADJ = -3 # Right wheel adjustment
 CCW_ADJ = 5
 BAT_34_ADJ = 0 # Battery 34 adjustment
