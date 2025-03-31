@@ -128,8 +128,7 @@ class RobotController:
                 if color == "red":
                     red_count += 1
                     print(f"\rRED DETECTED ({red_count}/{COLOR_RED_CONFIRMATION_COUNT})", end=" ")
-                    # TODO: Halt all robot movements here (not implemented yet)
-                    # TODO: Move robot back to deposit sandbag (not implemented yet)
+                    
                     if red_count >= COLOR_RED_CONFIRMATION_COUNT and self.sandbag_dispenser.sandbags_deployed < MAX_SANDBAGS:
                         print(f"\nFIRE CONFIRMED! Deploying sandbag...")
                         self.sandbag_dispenser.deploy_sandbag()
