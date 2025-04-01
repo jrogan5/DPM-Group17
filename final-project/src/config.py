@@ -18,7 +18,7 @@ TRACK_WIDTH = 15.0  # Distance between wheels in cm
 GRID_SIZE = 24.0  # Size of each grid cell in cm
 
 # Sandbag Deployment
-MAX_SANDBAGS = 5  # Maximum number of sandbags to deploy
+MAX_SANDBAGS = 2  # Maximum number of sandbags to deploy
 SANDBAG_DEFAULT_DEG = 92  # Degrees to rotate for one sandbag deployment
 SANDBAG_DEFAULT_DPS = 360  # Degrees per second for motor speed
 SANDBAG_DEFAULT_POWER = 30
@@ -26,8 +26,8 @@ SANDBAG_DEFAULT_POWER = 30
 # Color Detection
 COLOR_SENSOR_DELAY = 0.5  # Delay between color sensor readings (seconds)
 COLOR_CSV_PATH = "src/data/color_log.csv"
-COLOR_RED_CONFIRMATION_COUNT = 10
-COLOR_GREEN_CONFIRMATION_COUNT = 10
+COLOR_RED_CONFIRMATION_COUNT = 5
+COLOR_GREEN_CONFIRMATION_COUNT = 5
 COLOR_COOLDOWN_DURATION = 10.0
 
 # Siren
@@ -36,12 +36,12 @@ SIREN_NOTE_DURATION = 0.5  # Duration of each siren note (seconds)
 SIREN_VOLUME = 80  # Volume of the siren (0-100)
 
 # Wheels
-BATTERY_NUM: 33
+BATTERY_NUM = 33
 
 ANG_90 = 192
 RW_ADJ = -3 # Right wheel adjustment
 CCW_ADJ = 5
-TILE_ANG = -660
+TILE_ANG = 660
 RW_ADJ = -3 # Right wheel adjustment
 CCW_ADJ = 5
 BAT_34_ADJ = 0 # Battery 34 adjustment

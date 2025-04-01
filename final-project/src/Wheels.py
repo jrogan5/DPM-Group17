@@ -63,19 +63,17 @@ class Wheels():
         return left_thread, right_thread
 
     def move_forward_1(self):
-        """Moves forward by 1 tile"""
-        self.LEFT_WHEEL.set_position_relative(TILE_ANG)
-        self.RIGHT_WHEEL.set_position_relative(TILE_ANG)
-        wheels.wheel_stop_event.clear()
+        self.LEFT_WHEEL.set_position_relative(-TILE_ANG)
+        self.RIGHT_WHEEL.set_position_relative(-TILE_ANG)
         if self.debug:
             print("moved forward")
             
     def execute_turn(self, movement:str)->tuple[threading.Thread]:
         """Executes a predefined turn based on battery life."""
-        if movement not in wheels.MOVEMENT_MATRIX[BATTERY_NUM]:
+        if movement not in Wheels.MOVEMENT_MATRIX[BATTERY_NUM]:
             print("Invalid movement command.")
             return
-        left_magnitude, right_magnitude = wheels.MOVEMENT_MATRIX[BATTERY_NUM][movement]
+        left_magnitude, right_magnitude = Wheels.MOVEMENT_MATRIX[BATTERY_NUM][movement]
         left_thread = self.rotate_wheel(left_magnitude, self.LEFT_WHEEL)
         right_thread = self.rotate_wheel(right_magnitude, self.RIGHT_WHEEL)
         self._adjust_position(movement)
@@ -103,10 +101,17 @@ class Wheels():
 
 if __name__ == '__main__' :
     try:
-        wheels = Wheels()
+        wheels = Wheels(debug=True)
         while not wheels.START_BUTTON.is_pressed():
             pass
-        wheels.hard_code_traversal()
+        wheels.move_forward_1()
+        wheels.wait_between_moves()
+        wheels.execute_turn("CCW_90")
+        wheels.wait_between_moves()
+        wheels.execute_turn("CW_90")
+        wheels.wait_between_moves()
+        wheels.move_forward(TILE_ANG)
+        # wheels.hard_code_traversal()
         
         while True:
             pass

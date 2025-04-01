@@ -15,8 +15,9 @@ import threading
 import time
 from color_sensor import ColorDetector, set_csv_path
 from sandbag import SandbagDispenser
-#from siren import Siren
+from siren import Siren
 from estop import Estop
+from sweeper import Sweeper
 from utils.brick import reset_brick, wait_ready_sensors
 from config import *
 
@@ -29,9 +30,9 @@ class RobotController:
             self.estop = Estop()
             
             "SIREN"
-            use_siren = False
-            self.use_siren = use_siren
-            self.siren = Siren() if self.use_siren else None  
+            # use_siren = False
+            # self.use_siren = use_siren
+            # self.siren = Siren() if self.use_siren else None  
             
             "CSV"
             mode = 'w' 
@@ -127,8 +128,7 @@ class RobotController:
                 if color == "red":
                     red_count += 1
                     print(f"\rRED DETECTED ({red_count}/{COLOR_RED_CONFIRMATION_COUNT})", end=" ")
-                    # TODO: Halt all robot movements here (not implemented yet)
-                    # TODO: Move robot back to deposit sandbag (not implemented yet)
+                    
                     if red_count >= COLOR_RED_CONFIRMATION_COUNT and self.sandbag_dispenser.sandbags_deployed < MAX_SANDBAGS:
                         print(f"\nFIRE CONFIRMED! Deploying sandbag...")
                         self.sandbag_dispenser.deploy_sandbag()
