@@ -4,6 +4,7 @@ NODE_PER_GRID = 2
 GRID_HEIGHT = 2
 GRID_LENGTH = 3
 from Wheels import Wheels
+from Sweeper import Sweeper
 
 class Navigation():
     
@@ -14,6 +15,11 @@ class Navigation():
             self.Wheels = Wheels()
         else:
             self.Wheels = wheels
+
+        if not Sweeper:
+            self.Sweeper = Sweeper()
+        else:   
+            self.Sweeper = sweeper 
 
     def dfs(self, x, y):
         n, m = len(self.room), len(self.room[0])
@@ -52,6 +58,22 @@ class Navigation():
             print(x, y)
         for line in self.room[::-1]:
             print(line)
+
+'''
+    def hard_search_room(self):
+        # Author: james
+        # Date: April 1st, 2025
+        # Start at the yellow entrance. Mark the starting  position as (0,0). 
+        # At the end of the search, the robot should be at (0,0) again.
+        start_pos = get_xy(0)
+        cur_pos = start_pos
+        print("Start position: ", start_pos)
+        while True:
+            self.wheels.move_forward(50)
+            self.sweeper.full_sweep()
+
+        pass'
+'''
         
 
 

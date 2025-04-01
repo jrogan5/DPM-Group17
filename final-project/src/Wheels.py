@@ -9,6 +9,8 @@ from utils.brick import Motor, wait_ready_sensors, reset_brick, TouchSensor
 import time
 import threading
 from config import *
+import Odometry
+from helper_functions import *
 
 class Wheels():
     
@@ -25,10 +27,11 @@ class Wheels():
             }
         }
     
-    def __init__(self, debug=False):
+    def __init__(self, odometry:Odometry=None, debug=False):
         self.LEFT_WHEEL: Motor = Motor(LEFT_MOTOR_PORT)
         self.RIGHT_WHEEL: Motor = Motor(RIGHT_MOTOR_PORT)
         self.START_BUTTON: TouchSensor = TouchSensor(TOUCH_SENSOR_PORT)
+        self.odometry = odometry if odometry else Odometry()
         self.debug = debug
         self.direction = "N"
         self._direction_index: int = 0
@@ -61,6 +64,37 @@ class Wheels():
         if self.debug:
             print("moved forward")
         return left_thread, right_thread
+    
+    def move_to_coord(self, end_pos:tuple[int, int])->None:
+        start = self.odometry.get_xy(self.direction)
+        x, y = end_pos
+        cur_pos = start
+        if abs(start[0] - x) < 1: # x difference is within 1 cm -> move in y
+            if y - start[1] >= 0:
+                self.face_direction("N")
+            else:
+                self.face_direction("S")
+        elif abs(start[1] - y) < 1: # y difference is within 1 cm -> move in x
+            if x - start[0] >= 0:
+                self.face_direction("E")
+            else:
+                self.face_direction("W")
+        else:
+            if self.debug:
+                print("Invalid coordinates given; cannot move in x and y at once.")
+        if self.debug:
+            print(f"Starting: {start} Moving to: {end_pos}")
+        forward_move_threads = self.move_forward(150)
+        while cur_pos[1] < y:
+            cur_pos = self.odometry.get_xy(self.direction)
+            if self.debug:
+                print(f"Current position: {cur_pos}. Distance left: {cur_pos[1] - y}")
+        force_kill_thread(forward_move_threads[0], RuntimeError)
+        force_kill_thread(forward_move_threads[1], RuntimeError)
+
+
+        if self.debug:
+            print("moved to coordinates")
 
     def move_forward_1(self):
         self.LEFT_WHEEL.set_position_relative(-TILE_ANG)
