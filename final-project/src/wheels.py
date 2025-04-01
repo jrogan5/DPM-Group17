@@ -12,6 +12,8 @@ from config import *
 
 class Wheels():
     
+    Directions: list[str] = ["N", "E", "S", "W"]
+    
     MOVEMENT_MATRIX: dict = {
         33: {
             "CCW_90": (ANG_90+CCW_ADJ, -(ANG_90+CCW_ADJ)),
@@ -28,6 +30,8 @@ class Wheels():
         self.RIGHT_WHEEL: Motor = Motor(RIGHT_MOTOR_PORT)
         self.START_BUTTON: TouchSensor = TouchSensor(TOUCH_SENSOR_PORT)
         self.debug = debug
+        self.direction = "N"
+        self._direction_index: int = 0
         self.wheels_init()
         wait_ready_sensors(True)
         print("Wheels are ready to use")
@@ -36,6 +40,15 @@ class Wheels():
         "initialize the 2 wheels"
         self.LEFT_WHEEL.set_limits(30,360)
         self.RIGHT_WHEEL.set_limits(30, 360)
+    
+    def _adjust_position(self, turn_to_execute)->None:
+        if turn_to_execute == "CCW_90":
+            self._direction_index = (self._direction_index-1)%4
+        elif turn_to_execute == "CW_90":
+            self._direction_index = (self._direction_index+1)%4
+        else:
+            raise RuntimeError(f"Turn command {turn_to_execute} is not supported")
+        self.direction = Wheels.Directions[self._direction_index]
 
     def rotate_wheel(self, magnitude: int, wheel: Motor)->threading.Thread:
         thread = threading.Thread(target=wheel.set_position_relative, args=(magnitude,))
@@ -50,6 +63,7 @@ class Wheels():
         return left_thread, right_thread
 
     def move_forward_1(self):
+        """Moves forward by 1 tile"""
         self.LEFT_WHEEL.set_position_relative(TILE_ANG)
         self.RIGHT_WHEEL.set_position_relative(TILE_ANG)
         wheels.wheel_stop_event.clear()
@@ -64,6 +78,7 @@ class Wheels():
         left_magnitude, right_magnitude = wheels.MOVEMENT_MATRIX[BATTERY_NUM][movement]
         left_thread = self.rotate_wheel(left_magnitude, self.LEFT_WHEEL)
         right_thread = self.rotate_wheel(right_magnitude, self.RIGHT_WHEEL)
+        self._adjust_position(movement)
         if self.debug:
             print(f"Executing {movement} with values {left_magnitude}, {right_magnitude}. ")
         return left_thread, right_thread
