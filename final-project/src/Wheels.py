@@ -166,13 +166,15 @@ if __name__ == '__main__' :
         wheels = Wheels(debug=True)
         while not wheels.START_BUTTON.is_pressed():
             pass
-        wheels.move_forward_1()
-        wheels.wait_between_moves()
-        wheels.execute_turn("CCW_90")
-        wheels.wait_between_moves()
-        wheels.execute_turn("CW_90")
-        wheels.wait_between_moves()
-        wheels.move_forward(TILE_ANG)
+        x,y = wheels.odometry.get_xy(wheels.direction)
+        wheels.move_to_coord((x, y + 50))
+        # wheels.move_forward_1()
+        # wheels.wait_between_moves()
+        # wheels.execute_turn("CCW_90")
+        # wheels.wait_between_moves()
+        # wheels.execute_turn("CW_90")
+        # wheels.wait_between_moves()
+        # wheels.move_forward(TILE_ANG)
         # wheels.hard_code_traversal()
         
         while True:
