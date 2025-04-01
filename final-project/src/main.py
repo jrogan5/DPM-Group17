@@ -158,7 +158,7 @@ if __name__ == "__main__":
         wait_ready_sensors(True)
         robot.start()
 
-        while robot.running:
+        while robot.runnin and robot.estop_thread.is_alive():
             time.sleep(1)
 
     except KeyboardInterrupt:
