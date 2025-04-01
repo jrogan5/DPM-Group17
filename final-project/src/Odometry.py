@@ -9,9 +9,6 @@ from helper_functions import *
 class Odometry:
 
     def __init__(self, wheels:Wheels=None, debug=False):
-        self.US_X: EV3UltrasonicSensor = EV3UltrasonicSensor(ULTRASONIC_SIDE_PORT)
-        self.US_Y: EV3UltrasonicSensor = EV3UltrasonicSensor(ULTRASONIC_REAR_PORT)
-
         self.wheels = Wheels(debug)
         self.debug = debug
         wait_ready_sensors(True)
