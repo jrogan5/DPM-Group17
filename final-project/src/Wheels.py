@@ -67,6 +67,34 @@ class Wheels():
         self.RIGHT_WHEEL.set_position_relative(-TILE_ANG)
         if self.debug:
             print("moved forward")
+    
+    def face_direction(self, direction):
+        if direction == self.direction:
+            if self.debug:
+                print("No turn, same turning to same direction")
+            return
+        elif direction == Wheels.Directions[(self._direction_index+1)%4]:
+            if self.debug:
+                print(f"\'{direction}\' is right")
+            self.execute_turn("CW_90")
+        elif direction == Wheels.Directions[(self._direction_index-1)%4]:
+            if self.debug:
+                print(f"\'{direction}\' is left")
+            self.execute_turn("CCW_90")
+        elif direction == Wheels.Directions[(self._direction_index+2)%4]:
+            if self.debug:
+                print(f"\'{direction}\' is behind, turning twice")
+            self.execute_turn("CW_90")
+            self.wait_between_moves()
+            self.execute_turn("CW_90")
+        else:
+            raise RuntimeError("Invalid direction given")
+        self.wait_between_moves()
+        
+    def move_direction(self, direction, magnitude=TILE_ANG):
+        self.face_direction(direction)
+        self.move_forward(magnitude)
+        self.wait_between_moves()
             
     def execute_turn(self, movement:str)->tuple[threading.Thread]:
         """Executes a predefined turn based on battery life."""
