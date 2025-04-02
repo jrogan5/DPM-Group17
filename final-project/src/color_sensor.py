@@ -54,7 +54,7 @@ class ColorDetector:
     def is_red(self, rgb):
 
         r, g, b = rgb
-        return r > 3 * g and r > 4 * b and r > 10
+        return r > 2.5 * g and r > 2.5 * b and r > 10
 
     def is_green(self, rgb):
 
