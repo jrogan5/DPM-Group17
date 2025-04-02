@@ -11,7 +11,6 @@ class Odometry:
         self.debug = debug
 
     def get_xy(self, direction:str) -> tuple[int, int]:
-        from wheels import Wheels as wheels
         """
         Author: James
         Date: 2024-01-01

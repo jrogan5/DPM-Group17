@@ -48,7 +48,6 @@ SIREN_VOLUME = 80  # Volume of the siren (0-100)
 
 # Wheels
 BATTERY_NUM = 33
-
 ANG_90 = 192
 RW_ADJ = -3 # Right wheel adjustment
 CCW_ADJ = 5
@@ -56,6 +55,12 @@ TILE_ANG = 660
 RW_ADJ = -3 # Right wheel adjustment
 CCW_ADJ = 5
 BAT_34_ADJ = 0 # Battery 34 adjustment
+
+# Navigation (in kitchen)
+NODE_PER_GRID = 2
+GRID_HEIGHT = 2
+GRID_LENGTH = 3
+KITCHEN_ORIGIN = (48.0,72.0)
 
 # Sweeper
 SWEEP_RANGE = 160

@@ -5,6 +5,8 @@ Authors: E. Deng, J. Rogan
 Date: March 26th, 2025
 '''
 
+from asyncio import FastChildWatcher
+from turtle import forward
 from utils.brick import Motor, wait_ready_sensors, reset_brick, TouchSensor
 import time
 import threading
@@ -66,26 +68,22 @@ class Wheels():
         start = self.odometry.get_xy(direction=self.direction)
         x, y = end_pos
         cur_pos = start
+        if self.debug:
+            print(f"Starting: {start} Moving to: {end_pos}")
         if abs(start[0] - x) < 1: # x difference is within 1 cm -> move in y
             if y - start[1] >= 0:
-                self.face_direction("N")
+                forward_move_threads = self.move_direction("N", magnitude=5*TILE_ANG)
             else:
-                self.face_direction("S")
+                forward_move_threads = self.move_direction("S", magnitude=5*TILE_ANG)
         elif abs(start[1] - y) < 1: # y difference is within 1 cm -> move in x
             if x - start[0] >= 0:
-                self.face_direction("E")
+                forward_move_threads = self.move_direction("E", magnitude=5*TILE_ANG)
             else:
-                self.face_direction("W")
+                forward_move_threads = self.move_direction("W", magnitude=5*TILE_ANG)
         else:
             if self.debug:
                 print("Invalid coordinates given; cannot move in x and y at once.")
-        if self.debug:
-            print(f"Starting: {start} Moving to: {end_pos}")
-        forward_move_threads = self.move_forward(150)
-        while cur_pos[1] < y:
-            cur_pos = self.odometry.get_xy(direction=self.direction)
-            if self.debug:
-                print(f"Current position: {cur_pos}. Distance left: {cur_pos[1] - y}")
+            return
         force_kill_thread(forward_move_threads[0], RuntimeError)
         force_kill_thread(forward_move_threads[1], RuntimeError)
         print("Input: {end_pos}. Reached position: {cur_pos}")
