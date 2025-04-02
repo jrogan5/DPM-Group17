@@ -57,7 +57,7 @@ class RobotController:
             self.odometry = Odometry()
 
             "WHEELS"
-            self.wheels = Wheels(odometry=self.odometry)
+            self.wheels = Wheels(debug=True, odometry=self.odometry)
 
             "ROBOT"
             self.running = False
@@ -116,7 +116,6 @@ class RobotController:
         "WHEELS"
         self.wheels_thread.join()
         
-        
         "RESET"
         reset_brick()
         print("Robot stopped. Brick reset.")
@@ -129,9 +128,8 @@ class RobotController:
             print("wheels not initialized")
         print("Wheels and Odometry started!")
         pos = self.odometry.get_xy(self.wheels.direction)
-        self.wheels.move_to_coord((pos[0], pos[1] + 50))
-
-
+        print(f"(main) Current position: {pos}")
+        self.wheels.move_to_coord((pos[0], pos[1] + 25))
 
     def _monitor_colors(self):
         red_count = 0  # Counter for consecutive "red" detections

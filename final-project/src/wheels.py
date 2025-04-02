@@ -70,24 +70,49 @@ class Wheels():
         cur_pos = start
         if self.debug:
             print(f"Starting: {start} Moving to: {end_pos}")
-        if abs(start[0] - x) < 1: # x difference is within 1 cm -> move in y
-            if y - start[1] >= 0:
-                forward_move_threads = self.move_direction("N", magnitude=5*TILE_ANG)
+        try: 
+            if abs(start[0] - x) < 1: # x difference is within 1 cm -> move in y
+                if y - start[1] >= 0:
+                    print("condition 1")
+                    forward_move_threads = self.move_direction("N", magnitude=5*TILE_ANG)
+                    while cur_pos[1] < y:
+                        cur_pos = self.odometry.get_xy(direction=self.direction)
+                        print(f"(wheels) Current position: {cur_pos}. Moving North")
+                        time.sleep(0.5)
+                else:
+                    print("condition 2")
+                    forward_move_threads = self.move_direction("S", magnitude=5*TILE_ANG)
+                    while y < cur_pos[1]:
+                        cur_pos = self.odometry.get_xy(direction=self.direction)
+                        print(f"Current position: {cur_pos}. Moving South")
+                        time.sleep(0.5)
+            elif abs(start[1] - y) < 1: # y difference is within 1 cm -> move in x
+                if x - start[0] >= 0:
+                    print("condition 3")                
+                    forward_move_threads = self.move_direction("E", magnitude=5*TILE_ANG)
+                    while cur_pos[0] < x:
+                        cur_pos = self.odometry.get_xy(direction=self.direction)
+                        print(f"Current position: {cur_pos}. Moving East")
+                        time.sleep(0.5)
+                else:
+                    print("condition 4")
+                    forward_move_threads = self.move_direction("W", magnitude=5*TILE_ANG)
+                    while x < cur_pos[0]:
+                        cur_pos = self.odometry.get_xy(direction=self.direction)
+                        print(f"Current position: {cur_pos}. Moving West")
+                        time.sleep(0.5)
             else:
-                forward_move_threads = self.move_direction("S", magnitude=5*TILE_ANG)
-        elif abs(start[1] - y) < 1: # y difference is within 1 cm -> move in x
-            if x - start[0] >= 0:
-                forward_move_threads = self.move_direction("E", magnitude=5*TILE_ANG)
-            else:
-                forward_move_threads = self.move_direction("W", magnitude=5*TILE_ANG)
-        else:
-            if self.debug:
-                print("Invalid coordinates given; cannot move in x and y at once.")
-            return
-        force_kill_thread(forward_move_threads[0], RuntimeError)
-        force_kill_thread(forward_move_threads[1], RuntimeError)
-        print("Input: {end_pos}. Reached position: {cur_pos}")
-
+                if self.debug:
+                    print("Invalid coordinates given; cannot move in x and y at once.")
+                return
+            if forward_move_threads is not None:
+                if self.debug:
+                    print("Going to kill the motors now")
+                force_kill_thread(forward_move_threads[0], RuntimeError)
+                force_kill_thread(forward_move_threads[1], RuntimeError)
+            print(f"Input: {end_pos}. Reached position: {cur_pos}")
+        except RuntimeError:
+            print("Motor Threads ended forcibly")
         if self.debug:
             print("moved to coordinates")
 
@@ -164,7 +189,8 @@ if __name__ == '__main__' :
         wait_ready_sensors(True)
         while not wheels.START_BUTTON.is_pressed():
             pass
-        # wheels.move_forward_1()
+        
+        wheels.move_forward_1()
         # wheels.wait_between_moves()
         # wheels.execute_turn("CCW_90")
         # wheels.wait_between_moves()
