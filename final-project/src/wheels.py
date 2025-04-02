@@ -9,7 +9,6 @@ from utils.brick import Motor, wait_ready_sensors, reset_brick, TouchSensor
 import time
 import threading
 from config import *
-import Odometry
 from helper_functions import *
 
 class Wheels():
@@ -27,17 +26,15 @@ class Wheels():
             }
         }
     
-    def __init__(self, odometry:Odometry=None, debug=False):
+    def __init__(self, debug=False):
         self.LEFT_WHEEL: Motor = Motor(LEFT_MOTOR_PORT)
         self.RIGHT_WHEEL: Motor = Motor(RIGHT_MOTOR_PORT)
         self.START_BUTTON: TouchSensor = TouchSensor(TOUCH_SENSOR_PORT)
-        self.odometry = odometry if odometry else Odometry()
+        self.odometry: Odometry = odometry # to be set in main
         self.debug = debug
         self.direction = "N"
         self._direction_index: int = 0
         self.wheels_init()
-        wait_ready_sensors(True)
-        print("Wheels are ready to use")
 
     def wheels_init(self):
         "initialize the 2 wheels"
@@ -66,6 +63,7 @@ class Wheels():
         return left_thread, right_thread
     
     def move_to_coord(self, end_pos:tuple[int, int])->None:
+        from odometry import Odometry as odometry
         start = self.odometry.get_xy(self.direction)
         x, y = end_pos
         cur_pos = start
@@ -160,14 +158,15 @@ class Wheels():
         self.move_forward_1()
         self.wait_between_moves()
     
+    
 
 if __name__ == '__main__' :
     try:
+        print("Testing mode: wheels")
         wheels = Wheels(debug=True)
+        wait_ready_sensors(True)
         while not wheels.START_BUTTON.is_pressed():
             pass
-        x,y = wheels.odometry.get_xy(wheels.direction)
-        wheels.move_to_coord((x, y + 50))
         # wheels.move_forward_1()
         # wheels.wait_between_moves()
         # wheels.execute_turn("CCW_90")

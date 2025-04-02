@@ -5,7 +5,7 @@ Main wrapper script for the Firefighter Rescue Robot.
 Integrates ColorDetector, SandbagDispenser, and Siren classes to detect fires,
 deploy sandbags, and play a siren, with modular constants and threading.
 
-Author: David Vo, Lucia Cai
+Author: David Vo, Lucia Cai, James Rogan, Eric Deng
 Date: March 28, 2025
 """
 
@@ -17,9 +17,11 @@ from color_sensor import ColorDetector, set_csv_path
 from sandbag import SandbagDispenser
 from siren import Siren
 from estop import Estop
-from sweeper import Sweeper
+# from sweeper import Sweeper
 from utils.brick import reset_brick, wait_ready_sensors
 from config import *
+from wheels import Wheels
+from odometry import Odometry
 
 class RobotController:
 
@@ -29,7 +31,7 @@ class RobotController:
             "ESTOP"
             self.estop = Estop()
             
-            "SIREN"
+            # "SIREN"
             # use_siren = False
             # self.use_siren = use_siren
             # self.siren = Siren() if self.use_siren else None  
@@ -50,7 +52,13 @@ class RobotController:
             
             "SANDBAG DISPENSER"
             self.sandbag_dispenser = SandbagDispenser()
-            
+
+            "ODOMETRY"
+            self.odometry = Odometry()
+
+            "WHEELS"
+            self.wheels = Wheels()
+
             "ROBOT"
             self.running = False
 
@@ -71,28 +79,31 @@ class RobotController:
         self.estop_thread = threading.Thread(target=self.estop.start)
         self.estop_thread.start()
 
-        "SIREN"
-        if self.use_siren:
-            self.siren_thread = threading.Thread(target=self.siren.start)
-            self.siren_thread.start()
+        # "SIREN"
+        # if self.use_siren:
+        #     self.siren_thread = threading.Thread(target=self.siren.start)
+        #     self.siren_thread.start()
 
         "COLOR SENSOR"
         self.color_thread = threading.Thread(target=self._monitor_colors)
         self.color_thread.start()   # detect red: fire extinguish / green: obstacle avoidance
 
-        # TODO: Navigation to Kitchen
+        "WHEELS"
+        self.wheels_thread = threading.Thread(target=self._get_odometry)
+        self.wheels_thread.start()
+        
+        
         # TODO: Sweeping
-
 
     def stop(self):
   
         "ROBOT"
         self.running = False
         
-        "SIREN"
-        if self.use_siren:
-            self.siren.stop()
-            self.siren_thread.join()
+        # "SIREN"
+        # if self.use_siren:
+        #     self.siren.stop()
+        #     self.siren_thread.join()
             
         "COLOR SENSOR"
         self.color_thread.join()
@@ -101,10 +112,26 @@ class RobotController:
         "ESTOP"
         self.estop.stop()
         self.estop_thread.join()
+
+        "WHEELS"
+        self.wheels_thread.join()
+        
         
         "RESET"
         reset_brick()
         print("Robot stopped. Brick reset.")
+
+    def _get_odometry(self):
+        if self.odometry is None:
+            print("odometry not initialized")
+            return
+        if self.wheels is None:
+            print("wheels not initialized")
+        print("Wheels and Odometry started!")
+        pos = self.odometry.get_xy(self.wheels.direction)
+        self.wheels.move_to_coord((pos[0], pos[1] + 50))
+
+
 
     def _monitor_colors(self):
         red_count = 0  # Counter for consecutive "red" detections
@@ -158,8 +185,8 @@ if __name__ == "__main__":
         wait_ready_sensors(True)
         robot.start()
 
-        while robot.runnin and robot.estop_thread.is_alive():
-            time.sleep(1)
+        while True:
+            pass
 
     except KeyboardInterrupt:
         print("\nInterrupted by user.")

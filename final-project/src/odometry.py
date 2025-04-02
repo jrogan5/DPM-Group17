@@ -1,21 +1,17 @@
 from utils.brick import EV3UltrasonicSensor, Motor, wait_ready_sensors, reset_brick
-import time
-import threading
 
-from Wheels import Wheels
 from config import *
 from helper_functions import *
 
 class Odometry:
 
-    def __init__(self, wheels:Wheels=None, debug=False):
+    def __init__(self, debug=False):
         self.US_X: EV3UltrasonicSensor = EV3UltrasonicSensor(ULTRASONIC_SIDE_PORT)
         self.US_Y: EV3UltrasonicSensor = EV3UltrasonicSensor(ULTRASONIC_REAR_PORT)
-        self.wheels = Wheels(debug)
         self.debug = debug
-        wait_ready_sensors(True)
 
-    def get_xy(self, direction: str) -> tuple[int, int]:
+    def get_xy(self, direction:str) -> tuple[int, int]:
+        from wheels import Wheels as wheels
         """
         Author: James
         Date: 2024-01-01
@@ -36,4 +32,17 @@ class Odometry:
         else:
             raise ValueError(f"Invalid direction: {direction}")
         return usx_data, usy_data
+
+if __name__ == '__main__' :
+    print("Testing mode: odometry")
+    odometry = Odometry(debug=True)
+    wait_ready_sensors(True)
+    pos = odometry.get_xy("N")
+    print(f"coordinates: {pos}")
+    pos = odometry.get_xy("E")
+    print(f"coordinates: {pos}")
+    pos = odometry.get_xy("S")
+    print(f"coordinates: {pos}")
+    pos = odometry.get_xy("W")
+    print(f"coordinates: {pos}")
 
