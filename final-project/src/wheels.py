@@ -26,12 +26,12 @@ class Wheels():
             }
         }
     
-    def __init__(self, debug=False):
+    def __init__(self, odometry=None, debug=False):
         self.LEFT_WHEEL: Motor = Motor(LEFT_MOTOR_PORT)
         self.RIGHT_WHEEL: Motor = Motor(RIGHT_MOTOR_PORT)
         self.START_BUTTON: TouchSensor = TouchSensor(TOUCH_SENSOR_PORT)
-        self.odometry: Odometry = odometry # to be set in main
         self.debug = debug
+        self.odometry=odometry
         self.direction = "N"
         self._direction_index: int = 0
         self.wheels_init()
@@ -63,8 +63,7 @@ class Wheels():
         return left_thread, right_thread
     
     def move_to_coord(self, end_pos:tuple[int, int])->None:
-        from odometry import Odometry as odometry
-        start = self.odometry.get_xy(self.direction)
+        start = self.odometry.get_xy(direction=self.direction)
         x, y = end_pos
         cur_pos = start
         if abs(start[0] - x) < 1: # x difference is within 1 cm -> move in y
@@ -84,12 +83,12 @@ class Wheels():
             print(f"Starting: {start} Moving to: {end_pos}")
         forward_move_threads = self.move_forward(150)
         while cur_pos[1] < y:
-            cur_pos = self.odometry.get_xy(self.direction)
+            cur_pos = self.odometry.get_xy(direction=self.direction)
             if self.debug:
                 print(f"Current position: {cur_pos}. Distance left: {cur_pos[1] - y}")
         force_kill_thread(forward_move_threads[0], RuntimeError)
         force_kill_thread(forward_move_threads[1], RuntimeError)
-
+        print("Input: {end_pos}. Reached position: {cur_pos}")
 
         if self.debug:
             print("moved to coordinates")

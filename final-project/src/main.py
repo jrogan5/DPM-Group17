@@ -57,7 +57,7 @@ class RobotController:
             self.odometry = Odometry()
 
             "WHEELS"
-            self.wheels = Wheels()
+            self.wheels = Wheels(odometry=self.odometry)
 
             "ROBOT"
             self.running = False
