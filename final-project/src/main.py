@@ -18,10 +18,12 @@ from sandbag import SandbagDispenser
 from siren import Siren
 from estop import Estop
 # from sweeper import Sweeper
+from sweeper import Sweeper
 from utils.brick import reset_brick, wait_ready_sensors
 from config import *
 from wheels import Wheels
 from odometry import Odometry
+from navigation import Navigation
 
 class RobotController:
 
@@ -57,7 +59,14 @@ class RobotController:
             self.odometry = Odometry()
 
             "WHEELS"
+            # Wheels create child threads for motors, so we don't need to create them here
             self.wheels = Wheels(debug=True, odometry=self.odometry)
+
+            "NAVIGATION"
+            self.nav = Navigation(wheels=self.wheels, odometry=self.odometry, debug=True)
+
+            "SWEEPER"
+            self.sweeper = Sweeper(debug=True)
 
             "ROBOT"
             self.running = False
@@ -68,7 +77,6 @@ class RobotController:
         else:
             print(f"Initializing 'ROBOT CONTROLLER' [{os.path.basename(__file__)}]")
 
-        
     def start(self):
         print("Robot started!")
         
@@ -88,12 +96,9 @@ class RobotController:
         self.color_thread = threading.Thread(target=self._monitor_colors)
         self.color_thread.start()   # detect red: fire extinguish / green: obstacle avoidance
 
-        "WHEELS"
-        self._get_odometry()
-        
-        
-        # TODO: Sweeping
-
+        "ODOMETRY"
+        self._start_odometry()
+    
     def stop(self):
   
         "ROBOT"
@@ -119,7 +124,7 @@ class RobotController:
         reset_brick()
         print("Robot stopped. Brick reset.")
 
-    def _get_odometry(self):
+    def _start_odometry(self):
         if self.odometry is None:
             print("odometry not initialized")
             return
@@ -128,8 +133,44 @@ class RobotController:
         print("Wheels and Odometry started!")
         pos = self.odometry.get_xy(self.wheels.direction)
         print(f"(main) Current position: {pos}")
-        self.wheels.move_to_coord((pos[0]-20, pos[1]))
+        return pos
+        # self.wheels.move_to_coord((pos[0]-20, pos[1]))
 
+    def assume_entry_position(self):
+        if START_XY is not None and self.odometry.at_position("N",START_XY):
+            print("OK: Assuming entry position.")
+            self.wheels.hard_code_traversal_there()
+            return True
+        else:
+            print("WARNING: Robot is not at correct START position; adjust the position manually.")
+            return False
+        
+    def assume_exit_position(self):
+        if EXIT_XY is not None:
+            pos = self.odometry.get_xy(self.wheels.direction)
+            print(f"OK: Assuming EXIT position: {EXIT_XY} from current position: {pos}.")
+            self.wheels.move_to_coord(EXIT_XY[0], pos[1]) # set the x coordinate
+            self.wheels.move_to_coord(EXIT_XY[0], EXIT_XY[1]) # set the y coordinate
+            self.wheels.face_direction("S") # set the direction
+            if self.wheels.at_position("S", EXIT_XY):
+                print("OK: Robot is at correct EXIT position.")
+                return True
+            else:
+                print("WARNING: Robot is not at correct EXIT position; adjust the position manually.")
+                return False
+        else:
+            print("WARNING: EXIT position not set. See config.py.")
+            return False
+        
+    def return_to_start(self):
+            if EXIT_XY is not None and self.odometry.at_position("S",EXIT_XY):
+                print("OK: Assuming EXIT position.")
+                self.wheels.hard_code_traversal_back()
+                return True
+            else:
+                print("WARNING: Robot is not at correct EXIT position; adjust the position manually.")
+                return False
+            
     def _monitor_colors(self):
         red_count = 0  # Counter for consecutive "red" detections
         green_count = 0
@@ -142,7 +183,7 @@ class RobotController:
             if current_time < self.cooldown_until:
                 elapsed_time = round(abs(current_time - self.cooldown_until),1)
                 print(f"\rCooldown: [{elapsed_time}/{COLOR_COOLDOWN_DURATION}s]", end=" ")
-                time.sleep(COLOR_SENSOR_DELAY)
+                time.sleep(SENSOR_DELAY)
                 continue
 
             with self.lock:
@@ -173,7 +214,7 @@ class RobotController:
                     red_count = 0  # Reset if detected
                     green_count = 0
 
-            time.sleep(COLOR_SENSOR_DELAY)
+            time.sleep(SENSOR_DELAY)
 
 if __name__ == "__main__":
 
@@ -181,9 +222,15 @@ if __name__ == "__main__":
         robot = RobotController()
         wait_ready_sensors(True)
         robot.start()
+        if not robot.assume_entry_position():
+            raise ValueError("Failiure on entry; see above.")
+        # robot.nav.navigate_grid()
+        time.sleep(10) # test; move the robot to a random position, facing north
+        if not robot.assime_exit_position():
+            raise ValueError("Failure on exit; see above.")
+        robot.return_to_start()
+        print("Robot has returned to start position.")
 
-        while True:
-            pass
 
     except KeyboardInterrupt:
         print("\nInterrupted by user.")

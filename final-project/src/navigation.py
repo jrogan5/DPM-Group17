@@ -29,20 +29,22 @@ class Navigation():
         return (-1, -1)
 
     def navigate_grid(self):
+        # start with the grid position of the robot using odometry
         x, y = self._xy_to_grid(self.odometry.get_xy(direction=self.wheels.direction))
+        # then move onto the dfs search
         while (x, y) != (-1, -1):
             new_x, new_y = self.dfs(x, y)
             while new_x > x:
-                self.wheels.move_direction("N")
+                self.wheels.move_direction("N", int(TILE_ANG // NODE_PER_GRID))
                 x += 1
             while new_x < x:
-                self.wheels.move_direction("S")
+                self.wheels.move_direction("S", int(TILE_ANG // NODE_PER_GRID))
                 x -= 1
             while new_y > y:
-                self.wheels.move_direction("E")
+                self.wheels.move_direction("E", int(TILE_ANG // NODE_PER_GRID))
                 y += 1
             while new_y < y:
-                self.wheels.move_direction("W")
+                self.wheels.move_direction("W", int(TILE_ANG // NODE_PER_GRID))
                 y -= 1
             print(x, y)
         for line in self.room[::-1]:

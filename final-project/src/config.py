@@ -26,8 +26,6 @@ MAX_Y=120 + TUNING_Y #cm
 CEN_X=6.7  #cm from face of US_X, plus an additional tuning offset
 CEN_Y=8.1  #cm from face of US_Y, plus an additional tuning offset
 
-print("Program start.\nWaiting for sensors to turn on...")
-
 # Sandbag Deployment
 MAX_SANDBAGS = 2  # Maximum number of sandbags to deploy
 SANDBAG_DEFAULT_DEG = 92  # Degrees to rotate for one sandbag deployment
@@ -35,7 +33,7 @@ SANDBAG_DEFAULT_DPS = 360  # Degrees per second for motor speed
 SANDBAG_DEFAULT_POWER = 30
 
 # Color Detection
-COLOR_SENSOR_DELAY = 0.5  # Delay between color sensor readings (seconds)
+SENSOR_DELAY = 0.5  # Delay between sensor readings (seconds)
 COLOR_CSV_PATH = "src/data/color_log.csv"
 COLOR_RED_CONFIRMATION_COUNT = 5
 COLOR_GREEN_CONFIRMATION_COUNT = 5
@@ -47,19 +45,22 @@ SIREN_NOTE_DURATION = 0.5  # Duration of each siren note (seconds)
 SIREN_VOLUME = 80  # Volume of the siren (0-100)
 
 # Wheels
-BATTERY_NUM = 34
+BATTERY_NUM = 33
 ANG_90 = 192
 RW_ADJ = -1 # Right wheel adjustment, for power
-CCW_ADJ = 5
 TILE_ANG = 660
 CCW_ADJ = 0
 BAT_34_ADJ = 40 # Battery 34 adjustment
+START_XY = None # Starting coordinates for the robot
+START_DIR = "N" # Starting direction for the robot
+EXIT_XY = None # Entrance coordinates for the robot
+POS_THRESHOLD = 2 # Threshold for position accuracy in cm
 
 # Navigation (in kitchen)
 NODE_PER_GRID = 2
 GRID_HEIGHT = 2
 GRID_LENGTH = 3
-KITCHEN_ORIGIN = (48.0,72.0)
+KITCHEN_ORIGIN = (48.0,72.0) # bottom left corner of the kitchen
 
 # Sweeper
 SWEEP_RANGE = 140 

@@ -126,7 +126,7 @@ class Wheels():
         while self.LEFT_WHEEL.is_moving() or self.RIGHT_WHEEL.is_moving():
             pass
 
-    def hard_code_traversal(self)->None:
+    def hard_code_traversal_there(self)->None:
         self.move_forward(3*TILE_ANG)
         self.wait_between_moves()
         self.execute_turn("CW_90")
@@ -137,6 +137,18 @@ class Wheels():
         self.wait_between_moves()
         self.move_forward_1()
         self.wait_between_moves()
+
+    def hard_code_traversal_back(self)->None:
+        self.move_forward_1()
+        self.wait_between_moves()
+        self.execute_turn("CW_90")
+        self.wait_between_moves()
+        self.move_forward(3*TILE_ANG)
+        self.wait_between_moves()
+        self.execute_turn("CCW_90")
+        self.wait_between_moves()
+        self.move_forward(3*TILE_ANG)
+        self.wait_between_moves()
         
     def move_to_coord(self, end_pos:tuple[int, int])->None:
         start = self.odometry.get_xy(direction=self.direction)
@@ -144,7 +156,7 @@ class Wheels():
         cur_pos = start
         if self.debug:
             print(f"Starting: {start} Moving to: {end_pos}")
-        if abs(start[0] - x) < 1: # x difference is within 1 cm -> move in y
+        if abs(start[0] - x) < POS_THRESHOLD: # x difference is within  threshold -> move in y
             if y - start[1] >= 0:
                 print("condition 1")
                 forward_move_threads = self.move_direction("N", magnitude=5*TILE_ANG)
@@ -155,7 +167,7 @@ class Wheels():
                         if self.debug:
                             print("here 1")
                         break
-                    time.sleep(0.5)
+                    time.sleep(SENSOR_DELAY)
             else:
                 print("condition 2")
                 forward_move_threads = self.move_direction("S", magnitude=5*TILE_ANG)
@@ -166,8 +178,8 @@ class Wheels():
                         if self.debug:
                             print("here 2")
                         break
-                    time.sleep(0.5)
-        elif abs(start[1] - y) < 1: # y difference is within 1 cm -> move in x
+                    time.sleep(SENSOR_DELAY)
+        elif abs(start[1] - y) < POS_THRESHOLD: # y difference is within threshold -> move in x
             if x - start[0] >= 0:
                 print("condition 3")                
                 forward_move_threads = self.move_direction("E", magnitude=5*TILE_ANG)
@@ -178,7 +190,7 @@ class Wheels():
                         if self.debug:
                             print("here 3")
                         break
-                    time.sleep(0.5)
+                    time.sleep(SENSOR_DELAY)
             else:
                 print("condition 4")
                 forward_move_threads = self.move_direction("W", magnitude=5*TILE_ANG)
@@ -189,7 +201,7 @@ class Wheels():
                         if self.debug:
                             print("here 4")
                         break
-                    time.sleep(0.5)
+                    time.sleep(SENSOR_DELAY)
         else:
             if self.debug:
                 print("Invalid coordinates given; cannot move in x and y at once.")

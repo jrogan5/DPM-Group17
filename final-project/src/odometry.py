@@ -1,3 +1,4 @@
+from pickle import FALSE
 from utils.brick import EV3UltrasonicSensor, Motor, wait_ready_sensors, reset_brick
 
 from config import *
@@ -31,6 +32,15 @@ class Odometry:
         else:
             raise ValueError(f"Invalid direction: {direction}")
         return usx_data, usy_data
+    
+    def at_position(self, direction:str, input:tuple[float,float]):
+        equal = False
+        x,y = self.get_xy(direction)
+    
+        if abs(start[0] - x) < POS_THRESHOLD and abs(start[1] - y) < POS_THRESHOLD:
+            equal = True
+        return equal
+
 
 if __name__ == '__main__' :
     print("Testing mode: odometry")

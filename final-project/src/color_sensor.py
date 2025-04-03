@@ -12,7 +12,7 @@ from utils.brick import EV3ColorSensor, wait_ready_sensors, reset_brick
 from time import sleep, time
 import os
 from datetime import datetime
-from config import COLOR_SENSOR_PORT, COLOR_SENSOR_DELAY, COLOR_CSV_PATH
+from config import COLOR_SENSOR_PORT, SENSOR_DELAY, COLOR_CSV_PATH
 
 def set_csv_path(color_csv_path=COLOR_CSV_PATH):
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -100,7 +100,7 @@ if __name__ == "__main__":
                 ("Detecting colors... Press Ctrl+C to stop.")
                 while True:  
                     detector.print_and_log_color(csv_file)
-                    sleep(COLOR_SENSOR_DELAY)
+                    sleep(SENSOR_DELAY)
 
             except KeyboardInterrupt:
                 print("\nTesting mode interrupted.")
