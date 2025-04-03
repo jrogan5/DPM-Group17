@@ -106,8 +106,7 @@ class Wheels():
                     print("Invalid coordinates given; cannot move in x and y at once.")
                 return
             if forward_move_threads is not None:
-                if self.debug:
-                    print("Going to kill the motors now")
+                print("Going to kill the motors now")
                 force_kill_thread(forward_move_threads[0], RuntimeError)
                 force_kill_thread(forward_move_threads[1], RuntimeError)
             print(f"Input: {end_pos}. Reached position: {cur_pos}")
