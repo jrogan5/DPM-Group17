@@ -41,7 +41,7 @@ class Wheels():
     def wheels_init(self):
         "initialize the 2 wheels"
         self.LEFT_WHEEL.set_limits(30,360)
-        self.RIGHT_WHEEL.set_limits(30, 360)
+        self.RIGHT_WHEEL.set_limits(30+RW_ADJ, 360)
     
     def _adjust_position(self, turn_to_execute)->None:
         if turn_to_execute == "CCW_90":
@@ -71,7 +71,7 @@ class Wheels():
         
     def move_forward(self, magnitude:int)->tuple[threading.Thread]:
         left_thread = threading.Thread(target=self.rotate_wheel, args=(-magnitude, self.LEFT_WHEEL))
-        right_thread = threading.Thread(target=self.rotate_wheel, args=(-magnitude+RW_ADJ, self.RIGHT_WHEEL))
+        right_thread = threading.Thread(target=self.rotate_wheel, args=(-magnitude, self.RIGHT_WHEEL))
         left_thread.start()
         right_thread.start()
         if self.debug:
@@ -218,8 +218,32 @@ if __name__ == '__main__' :
         wait_ready_sensors(True)
         while not wheels.START_BUTTON.is_pressed():
             pass
-        
-        wheels.move_forward_1()
+        time.sleep(1)
+        wheels.face_direction("E")
+        while not wheels.START_BUTTON.is_pressed():
+            pass
+        time.sleep(1)
+        wheels.face_direction("S")
+        while not wheels.START_BUTTON.is_pressed():
+            pass
+        time.sleep(1)
+        wheels.face_direction("W")
+        while not wheels.START_BUTTON.is_pressed():
+            pass
+        time.sleep(1)
+        wheels.face_direction("N")
+        while not wheels.START_BUTTON.is_pressed():
+            pass
+        time.sleep(1)
+        wheels.face_direction("S")
+        while not wheels.START_BUTTON.is_pressed():
+            pass
+        time.sleep(1)
+        wheels.face_direction("E")
+        while not wheels.START_BUTTON.is_pressed():
+            pass
+        time.sleep(1)
+        wheels.face_direction("W")
         # wheels.wait_between_moves()
         # wheels.execute_turn("CCW_90")
         # wheels.wait_between_moves()

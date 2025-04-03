@@ -49,11 +49,10 @@ SIREN_VOLUME = 80  # Volume of the siren (0-100)
 # Wheels
 BATTERY_NUM = 34
 ANG_90 = 192
-RW_ADJ = -3 # Right wheel adjustment
+RW_ADJ = -1 # Right wheel adjustment, for power
 CCW_ADJ = 5
 TILE_ANG = 660
-RW_ADJ = -3 # Right wheel adjustment
-CCW_ADJ = 5
+CCW_ADJ = 0
 BAT_34_ADJ = 40 # Battery 34 adjustment
 
 # Navigation (in kitchen)
