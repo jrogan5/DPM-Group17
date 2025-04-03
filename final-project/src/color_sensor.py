@@ -38,7 +38,7 @@ class ColorDetector:
             print(f"Error initializing color sensor: {e}")
 
         else:
-            print(f"Initializing 'COLOR SENSOR' [{os.path.basename(__file__)}] | Delay: [{COLOR_SENSOR_DELAY}s] | CSV: [{COLOR_CSV_PATH}] | Port: [{COLOR_SENSOR_PORT}]")
+            print(f"Initializing 'COLOR SENSOR' [{os.path.basename(__file__)}] | Delay: [{SENSOR_DELAY}s] | CSV: [{COLOR_CSV_PATH}] | Port: [{COLOR_SENSOR_PORT}]")
 
     def detect_color(self):
 

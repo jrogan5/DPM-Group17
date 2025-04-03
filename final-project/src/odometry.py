@@ -1,6 +1,5 @@
-from pickle import FALSE
 from utils.brick import EV3UltrasonicSensor, Motor, wait_ready_sensors, reset_brick
-
+import time
 from config import *
 from helper_functions import *
 
@@ -36,22 +35,27 @@ class Odometry:
     def at_position(self, direction:str, input:tuple[float,float]):
         equal = False
         x,y = self.get_xy(direction)
-    
-        if abs(start[0] - x) < POS_THRESHOLD and abs(start[1] - y) < POS_THRESHOLD:
+        if self.debug:
+            print(f"input: {input}. current: ({x},{y}).")
+        if abs(input[0] - x) < POS_THRESHOLD and abs(input[1] - y) < POS_THRESHOLD:
             equal = True
         return equal
 
 
 if __name__ == '__main__' :
     print("Testing mode: odometry")
+    tsleep=0.5
     odometry = Odometry(debug=True)
     wait_ready_sensors(True)
     pos = odometry.get_xy("N")
-    print(f"coordinates: {pos}")
+    print(f"coordinates: {pos}. Rotate CW_90 Manually.")
+    time.sleep(tsleep)
     pos = odometry.get_xy("E")
-    print(f"coordinates: {pos}")
+    print(f"coordinates: {pos}. Rotate CW_90 Manually.")
+    time.sleep(tsleep)    
     pos = odometry.get_xy("S")
-    print(f"coordinates: {pos}")
+    print(f"coordinates: {pos}. Rotate CW_90 Manually.")
+    time.sleep(tsleep)
     pos = odometry.get_xy("W")
-    print(f"coordinates: {pos}")
+    print(f"coordinates: {pos}. Done")
 

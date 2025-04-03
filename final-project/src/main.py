@@ -17,7 +17,6 @@ from color_sensor import ColorDetector, set_csv_path
 from sandbag import SandbagDispenser
 from siren import Siren
 from estop import Estop
-# from sweeper import Sweeper
 from sweeper import Sweeper
 from utils.brick import reset_brick, wait_ready_sensors
 from config import *
@@ -79,7 +78,7 @@ class RobotController:
 
     def start(self):
         print("Robot started!")
-        
+
         "ROBOT"
         self.running = True
 
@@ -139,20 +138,23 @@ class RobotController:
     def assume_entry_position(self):
         if START_XY is not None and self.odometry.at_position("N",START_XY):
             print("OK: Assuming entry position.")
-            self.wheels.hard_code_traversal_there()
+            # self.wheels.hard_code_traversal_there()
+            self.wheels.move_to_coord((START_XY[0],58))
+            self.wheels.move_to_coord((74,58))
+            self.wheels.move_to_coord((78,78))
             return True
         else:
-            print("WARNING: Robot is not at correct START position; adjust the position manually.")
+            print(f"WARNING: Robot is not at correct START position; adjust the position manually.")
             return False
         
     def assume_exit_position(self):
         if EXIT_XY is not None:
             pos = self.odometry.get_xy(self.wheels.direction)
             print(f"OK: Assuming EXIT position: {EXIT_XY} from current position: {pos}.")
-            self.wheels.move_to_coord(EXIT_XY[0], pos[1]) # set the x coordinate
-            self.wheels.move_to_coord(EXIT_XY[0], EXIT_XY[1]) # set the y coordinate
+            self.wheels.move_to_coord((EXIT_XY[0], pos[1])) # set the x coordinate
+            self.wheels.move_to_coord((EXIT_XY[0], EXIT_XY[1])) # set the y coordinate
             self.wheels.face_direction("S") # set the direction
-            if self.wheels.at_position("S", EXIT_XY):
+            if self.odometry.at_position("S", EXIT_XY):
                 print("OK: Robot is at correct EXIT position.")
                 return True
             else:
@@ -164,8 +166,10 @@ class RobotController:
         
     def return_to_start(self):
             if EXIT_XY is not None and self.odometry.at_position("S",EXIT_XY):
-                print("OK: Assuming EXIT position.")
-                self.wheels.hard_code_traversal_back()
+                print("OK: Returning to start.")
+                self.wheels.move_to_coord((EXIT_XY[0],78))
+                self.wheels.move_to_coord((38,78))
+                self.wheels.move_to_coord((38,18))
                 return True
             else:
                 print("WARNING: Robot is not at correct EXIT position; adjust the position manually.")
@@ -225,15 +229,18 @@ if __name__ == "__main__":
         if not robot.assume_entry_position():
             raise ValueError("Failiure on entry; see above.")
         # robot.nav.navigate_grid()
-        time.sleep(10) # test; move the robot to a random position, facing north
-        if not robot.assime_exit_position():
+        time.sleep(5) # test; move the robot to a random position, facing east
+        robot.wheels.face_direction("S")
+        time.sleep(5)
+        if not robot.assume_exit_position():
             raise ValueError("Failure on exit; see above.")
-        robot.return_to_start()
+        if not robot.return_to_start():
+            raise ValueError("Failiure on return; see above.")
         print("Robot has returned to start position.")
-
-
     except KeyboardInterrupt:
         print("\nInterrupted by user.")
+    except Exception as e:
+        print(f"Exception raised: {e}")
 
     finally:
         robot.stop()

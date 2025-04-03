@@ -46,15 +46,15 @@ SIREN_VOLUME = 80  # Volume of the siren (0-100)
 
 # Wheels
 BATTERY_NUM = 33
-ANG_90 = 192
-RW_ADJ = -1 # Right wheel adjustment, for power
+ANG_90 = 265
+RW_ADJ = -4 # Right wheel adjustment, for power
 TILE_ANG = 660
 CCW_ADJ = 0
-BAT_34_ADJ = 40 # Battery 34 adjustment
-START_XY = None # Starting coordinates for the robot
+BAT_34_ADJ = 32 # Battery 34 adjustment
+START_XY = (14.5,11.1) # Starting coordinates for the robot
 START_DIR = "N" # Starting direction for the robot
-EXIT_XY = None # Entrance coordinates for the robot
-POS_THRESHOLD = 2 # Threshold for position accuracy in cm
+EXIT_XY = (84.6,88.5) # Entrance coordinates for the robot
+POS_THRESHOLD = 8 # Threshold for position accuracy in cm
 
 # Navigation (in kitchen)
 NODE_PER_GRID = 2

@@ -53,7 +53,7 @@ class Wheels():
         self.direction = Wheels.Directions[self._direction_index]
 
 
-    def move_forward_1(self):
+    def move_forward_1(self): # out-dated
         self.LEFT_WHEEL.set_position_relative(-TILE_ANG)
         self.RIGHT_WHEEL.set_position_relative(-TILE_ANG)
         if self.debug:
