@@ -89,8 +89,7 @@ class RobotController:
         self.color_thread.start()   # detect red: fire extinguish / green: obstacle avoidance
 
         "WHEELS"
-        self.wheels_thread = threading.Thread(target=self._get_odometry)
-        self.wheels_thread.start()
+        self._get_odometry()
         
         
         # TODO: Sweeping
@@ -114,7 +113,7 @@ class RobotController:
         self.estop_thread.join()
 
         "WHEELS"
-        self.wheels_thread.join()
+        # self.wheels_thread.join()
         
         "RESET"
         reset_brick()
@@ -129,7 +128,7 @@ class RobotController:
         print("Wheels and Odometry started!")
         pos = self.odometry.get_xy(self.wheels.direction)
         print(f"(main) Current position: {pos}")
-        self.wheels.move_to_coord((pos[0], pos[1] + 25))
+        self.wheels.move_to_coord((pos[0], pos[1] + 5.0))
 
     def _monitor_colors(self):
         red_count = 0  # Counter for consecutive "red" detections
