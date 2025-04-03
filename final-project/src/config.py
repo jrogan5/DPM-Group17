@@ -33,7 +33,7 @@ SANDBAG_DEFAULT_DPS = 360  # Degrees per second for motor speed
 SANDBAG_DEFAULT_POWER = 30
 
 # Color Detection
-SENSOR_DELAY = 0.5  # Delay between sensor readings (seconds)
+SENSOR_DELAY = 0.1  # Delay between sensor readings (seconds)
 COLOR_CSV_PATH = "src/data/color_log.csv"
 COLOR_RED_CONFIRMATION_COUNT = 5
 COLOR_GREEN_CONFIRMATION_COUNT = 5
@@ -63,5 +63,6 @@ GRID_LENGTH = 3
 KITCHEN_ORIGIN = (48.0,72.0) # bottom left corner of the kitchen
 
 # Sweeper
-SWEEP_RANGE = 140 
-REFRESH_RATE = 0.1
+
+SWEEP_RANGE = 190
+REFRESH_RATE = 0.05

@@ -50,16 +50,17 @@ class ColorDetector:
         elif self.is_green(rgb):
             return "green"
         return "none"
+        sleep(0.05)
 
     def is_red(self, rgb):
 
         r, g, b = rgb
-        return r > 2.5 * g and r > 2.5 * b and r > 10
+        return r > 2.2 * g and r > 2.2 * b and g < 50
 
     def is_green(self, rgb):
 
         r, g, b = rgb
-        return g > 0.8 * r and g > 2 * b and g > 10
+        return g > r and g > 2 * b and g > 5
 
     def print_and_log_color(self, csv_file):
 
@@ -78,6 +79,21 @@ class ColorDetector:
         # Write to the already open CSV file
         csv_file.write(f"{timestamp},{elapsed_time},{iteration},{color},{rgb[0]},{rgb[1]},{rgb[2]}\n")
         csv_file.flush()  # Ensure data is written to disk immediately
+        return color
+
+    def print_color(self):
+        color = self.detect_color()
+        rgb = self.sensor.get_rgb()
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        elapsed_time = f"{round(time() - self.start_time, 2):.2f}"  # Time elapsed in seconds, rounded to 2 decimals
+        iteration = self.iteration
+        self.iteration += 1
+        
+        if color in ["red", "green"]:
+            print(f"\r{timestamp} - Elapsed: {elapsed_time}s - It: {iteration} - Color: {color} (RGB: {rgb})")
+        else:
+            print(f"\r{timestamp} - Elapsed: {elapsed_time}s - It: {iteration} - Color: none (RGB: {rgb})", end=" ")
+        return color
 
 if __name__ == "__main__":
 
