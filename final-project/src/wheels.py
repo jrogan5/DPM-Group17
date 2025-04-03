@@ -52,6 +52,14 @@ class Wheels():
             raise RuntimeError(f"Turn command {turn_to_execute} is not supported")
         self.direction = Wheels.Directions[self._direction_index]
 
+
+    def move_forward_1(self):
+        self.LEFT_WHEEL.set_position_relative(-TILE_ANG)
+        self.RIGHT_WHEEL.set_position_relative(-TILE_ANG)
+        if self.debug:
+            print("moved forward")
+    
+
     def rotate_wheel(self, magnitude: int, wheel: Motor)->threading.Thread:
         try:
             wheel.set_position_relative(magnitude)
@@ -62,20 +70,14 @@ class Wheels():
             print("Motor thread stopped forcibly")
         
     def move_forward(self, magnitude:int)->tuple[threading.Thread]:
-        left_thread = threading.Thread(target=self.rotate_wheel(-magnitude, self.LEFT_WHEEL))
-        right_thread = threading.Thread(self.rotate_wheel(-magnitude+RW_ADJ, self.RIGHT_WHEEL))
+        left_thread = threading.Thread(target=self.rotate_wheel, args=(-magnitude, self.LEFT_WHEEL))
+        right_thread = threading.Thread(self.rotate_wheel, args=(-magnitude+RW_ADJ, self.RIGHT_WHEEL))
         left_thread.start()
         right_thread.start()
         if self.debug:
             print("Moving forward")
         return left_thread, right_thread
 
-    def move_forward_1(self):
-        self.LEFT_WHEEL.set_position_relative(-TILE_ANG)
-        self.RIGHT_WHEEL.set_position_relative(-TILE_ANG)
-        if self.debug:
-            print("moved forward")
-    
     def face_direction(self, direction):
         if direction == self.direction:
             if self.debug:
@@ -192,8 +194,15 @@ class Wheels():
             if self.debug:
                 print("Invalid coordinates given; cannot move in x and y at once.")
             return
-        force_kill_thread(forward_move_threads[0], RuntimeError)
-        force_kill_thread(forward_move_threads[1], RuntimeError)
+        if forward_move_threads[0] and forward_move_threads[0].is_alive():
+            force_kill_thread(forward_move_threads[0], RuntimeError)
+            if self.debug:
+                print("left thread killed")
+        if forward_move_threads[1] and forward_move_threads[1].is_alive():
+            force_kill_thread(forward_move_threads[1], RuntimeError)
+            if self.debug:
+                print("right thread killed")
+        
         print(f"Input: {end_pos}. Reached position: {cur_pos}")
     
     
