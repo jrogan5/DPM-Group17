@@ -3,7 +3,7 @@ import time
 import threading
 
 from color_sensor import ColorDetector
-from Wheels import Wheels
+from wheels import Wheels
 from sandbag import SandbagDispenser
 from config import *
 from helper_functions import *

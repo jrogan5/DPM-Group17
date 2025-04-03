@@ -128,7 +128,7 @@ class RobotController:
         print("Wheels and Odometry started!")
         pos = self.odometry.get_xy(self.wheels.direction)
         print(f"(main) Current position: {pos}")
-        self.wheels.move_to_coord((pos[0], pos[1] + 5.0))
+        self.wheels.move_to_coord((pos[0], pos[1] + 20.0))
 
     def _monitor_colors(self):
         red_count = 0  # Counter for consecutive "red" detections

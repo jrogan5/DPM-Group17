@@ -60,18 +60,18 @@ class Wheels():
             print("moved forward")
     
 
-    def rotate_wheel(self, magnitude: int, wheel: Motor)->threading.Thread:
+    def rotate_wheel(self, magnitude: int, wheel: Motor):
         try:
             wheel.set_position_relative(magnitude)
             self.wait_between_moves()
             if self.debug:
-                print("Shouldn't get here")
+                print(f"({wheel}) full magnitude rotation")
         except RuntimeError:
             print("Motor thread stopped forcibly")
         
     def move_forward(self, magnitude:int)->tuple[threading.Thread]:
         left_thread = threading.Thread(target=self.rotate_wheel, args=(-magnitude, self.LEFT_WHEEL))
-        right_thread = threading.Thread(self.rotate_wheel, args=(-magnitude+RW_ADJ, self.RIGHT_WHEEL))
+        right_thread = threading.Thread(target=self.rotate_wheel, args=(-magnitude+RW_ADJ, self.RIGHT_WHEEL))
         left_thread.start()
         right_thread.start()
         if self.debug:
@@ -107,13 +107,15 @@ class Wheels():
         return threads
              
     def execute_turn(self, movement:str)->tuple[threading.Thread]:
-        """Executes a predefined turn based on battery life."""
+        """Executes a predefined turn based on battery being used."""
         if movement not in Wheels.MOVEMENT_MATRIX[BATTERY_NUM]:
             print("Invalid movement command.")
             return
         left_magnitude, right_magnitude = Wheels.MOVEMENT_MATRIX[BATTERY_NUM][movement]
-        left_thread = self.rotate_wheel(left_magnitude, self.LEFT_WHEEL)
-        right_thread = self.rotate_wheel(right_magnitude, self.RIGHT_WHEEL)
+        left_thread = threading.Thread(target=self.rotate_wheel, args=(left_magnitude, self.LEFT_WHEEL))
+        right_thread = threading.Thread(target=self.rotate_wheel, args=(right_magnitude, self.RIGHT_WHEEL))
+        left_thread.start()
+        right_thread.start()
         self._adjust_position(movement)
         if self.debug:
             print(f"Executing {movement} with values {left_magnitude}, {right_magnitude}. ")
@@ -146,9 +148,7 @@ class Wheels():
             if y - start[1] >= 0:
                 print("condition 1")
                 forward_move_threads = self.move_direction("N", magnitude=5*TILE_ANG)
-                if forward_move_threads[0].is_alive():
-                    print("alive left 1")
-                while True:
+                while forward_move_threads[0].is_alive() and forward_move_threads[1].is_alive():
                     cur_pos = self.odometry.get_xy(direction=self.direction)
                     print(f"(wheels) Current position: {cur_pos}. Moving North")
                     if cur_pos[1] > y:
@@ -194,12 +194,16 @@ class Wheels():
             if self.debug:
                 print("Invalid coordinates given; cannot move in x and y at once.")
             return
-        if forward_move_threads[0] and forward_move_threads[0].is_alive():
+        if forward_move_threads[0].is_alive():
+            left_kill_angle = self.LEFT_WHEEL.get_position()
             force_kill_thread(forward_move_threads[0], RuntimeError)
+            self.LEFT_WHEEL.set_position(left_kill_angle)
             if self.debug:
                 print("left thread killed")
         if forward_move_threads[1] and forward_move_threads[1].is_alive():
+            right_kill_angle = self.RIGHT_WHEEL.get_position()
             force_kill_thread(forward_move_threads[1], RuntimeError)
+            self.RIGHT_WHEEL.set_position(right_kill_angle)
             if self.debug:
                 print("right thread killed")
         
