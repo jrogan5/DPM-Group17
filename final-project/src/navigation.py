@@ -2,6 +2,7 @@
 from config import *
 from wheels import Wheels
 from utils.brick import wait_ready_sensors
+import time
 
 class Navigation():
     
@@ -20,11 +21,11 @@ class Navigation():
         seen = set()
         while stack:
             x, y = stack.pop()
-            if x < 0 or x >= n or y < 0 or y >= m or (x, y) in seen:
+            if x < 0 or x >= m or y < 0 or y >= n or (x, y) in seen:
                 continue
             seen.add((x, y))
-            if not self.room[x][y]:
-                self.room[x][y] = True
+            if not self.room[y][x]:
+                self.room[y][x] = True
                 return (x, y)
             stack.append((x-1, y))
             stack.append((x, y+1))
@@ -36,10 +37,12 @@ class Navigation():
         # start with the grid position of the robot using odometry
         if self.debug:
             print("Inside navigate grid")
+        time.sleep(5)
         xy_cm = self.odometry.get_xy(direction=self.wheels.direction)
+        x, y = 3, 3
         if self.debug:
             print(f"Current position in cm {xy_cm}")
-        x, y = self._xy_to_grid(xy_cm)
+        #x, y = self._xy_to_grid(xy_cm)
         if self.debug:
             print(x, y)
         # then move onto the dfs search
@@ -52,14 +55,15 @@ class Navigation():
                 self.wheels.move_direction("S", int(TILE_ANG // NODE_PER_GRID))
                 x -= 1
             while new_y > y:
-                self.wheels.move_direction("E", int(TILE_ANG // NODE_PER_GRID))
+                self.wheels.move_direction("W", int(TILE_ANG // NODE_PER_GRID))
                 y += 1
             while new_y < y:
-                self.wheels.move_direction("W", int(TILE_ANG // NODE_PER_GRID))
+                self.wheels.move_direction("E", int(TILE_ANG // NODE_PER_GRID))
                 y -= 1
-            print(x, y)
-        for line in self.room[::-1]:
-            print(line)
+            time.sleep(3)
+            print(f"Current pos: {x, y}")
+            for line in self.room:
+                print(line)
 
     def return_to_origin(self):
         "Return to the origin of the map, in absoulute coordinates"
