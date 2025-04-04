@@ -37,7 +37,7 @@ class Navigation():
         xy_cm = self.odometry.get_xy(direction=self.wheels.direction)
         if self.debug:
             print(f"Current position in cm {xy_cm}")
-        x, y = self._xy_to_grid()
+        x, y = self._xy_to_grid(xy_cm)
         if self.debug:
             print(x, y)
         # then move onto the dfs search
