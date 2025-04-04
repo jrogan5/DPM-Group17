@@ -151,13 +151,13 @@ class Wheels():
         self.move_forward(3*TILE_ANG)
         self.wait_between_moves()
         
-    def move_to_coord(self, end_pos:tuple[int, int])->None:
+    def move_to_coord(self, axis:str, end_pos:tuple[int, int])->None:
         start = self.odometry.get_xy(direction=self.direction)
         x, y = end_pos
         cur_pos = start
         if self.debug:
             print(f"Starting: {start} Moving to: {end_pos}")
-        if abs(start[0] - x) < POS_THRESHOLD: # x difference is within  threshold -> move in y
+        if axis == "y": # x difference is within  threshold -> move in y
             if y - start[1] >= 0:
                 print("condition 1")
                 forward_move_threads = self.move_direction("N", magnitude=5*TILE_ANG)
@@ -180,7 +180,7 @@ class Wheels():
                             print("here 2")
                         break
                     time.sleep(SENSOR_DELAY)
-        elif abs(start[1] - y) < POS_THRESHOLD: # y difference is within threshold -> move in x
+        elif axis == "x": # y difference is within threshold -> move in x
             if x - start[0] >= 0:
                 print("condition 3")                
                 forward_move_threads = self.move_direction("E", magnitude=5*TILE_ANG)
@@ -231,11 +231,11 @@ if __name__ == '__main__' :
         wait_ready_sensors(True)
         while not wheels.START_BUTTON.is_pressed():
             pass
-        wheels.move_to_coord((40, 40))
+        wheels.move_to_coord("y", (40, 40))
         wheels.wait_between_moves()
         wheels.face_direction("E")
         wheels.wait_between_moves()
-        wheels.move_to_coord((50, 50))
+        wheels.move_to_coord("x", (50, 50))
         #wheels.hard_code_traversal_there()
         #time.sleep(1)
         #wheels.face_direction("E")
