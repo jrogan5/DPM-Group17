@@ -12,6 +12,7 @@ import time
 import threading
 from config import *
 from helper_functions import *
+from odometry import Odometry
 
 class Wheels():
     
@@ -28,12 +29,12 @@ class Wheels():
             }
         }
     
-    def __init__(self, odometry=None, debug=False):
+    def __init__(self, debug=False):
         self.LEFT_WHEEL: Motor = Motor(LEFT_MOTOR_PORT)
         self.RIGHT_WHEEL: Motor = Motor(RIGHT_MOTOR_PORT)
         self.START_BUTTON: TouchSensor = TouchSensor(TOUCH_SENSOR_PORT)
         self.debug = debug
-        self.odometry=odometry
+        self.odometry: Odometry =Odometry(debug)
         self.direction = "N"
         self._direction_index: int = 0
         self.wheels_init()
@@ -127,7 +128,7 @@ class Wheels():
             pass
 
     def hard_code_traversal_there(self)->None:
-        self.move_forward(3*TILE_ANG)
+        self.move_forward(2*TILE_ANG)
         self.wait_between_moves()
         self.execute_turn("CW_90")
         self.wait_between_moves()
@@ -230,32 +231,38 @@ if __name__ == '__main__' :
         wait_ready_sensors(True)
         while not wheels.START_BUTTON.is_pressed():
             pass
-        time.sleep(1)
+        wheels.move_to_coord((40, 40))
+        wheels.wait_between_moves()
         wheels.face_direction("E")
-        while not wheels.START_BUTTON.is_pressed():
-            pass
-        time.sleep(1)
-        wheels.face_direction("S")
-        while not wheels.START_BUTTON.is_pressed():
-            pass
-        time.sleep(1)
-        wheels.face_direction("W")
-        while not wheels.START_BUTTON.is_pressed():
-            pass
-        time.sleep(1)
-        wheels.face_direction("N")
-        while not wheels.START_BUTTON.is_pressed():
-            pass
-        time.sleep(1)
-        wheels.face_direction("S")
-        while not wheels.START_BUTTON.is_pressed():
-            pass
-        time.sleep(1)
-        wheels.face_direction("E")
-        while not wheels.START_BUTTON.is_pressed():
-            pass
-        time.sleep(1)
-        wheels.face_direction("W")
+        wheels.wait_between_moves()
+        wheels.move_to_coord((50, 50))
+        #wheels.hard_code_traversal_there()
+        #time.sleep(1)
+        #wheels.face_direction("E")
+        #while not wheels.START_BUTTON.is_pressed():
+        #    pass
+        #time.sleep(1)
+        #wheels.face_direction("S")
+        #while not wheels.START_BUTTON.is_pressed():
+        #    pass
+        #time.sleep(1)
+        #wheels.face_direction("W")
+        #while not wheels.START_BUTTON.is_pressed():
+        #    pass
+        #time.sleep(1)
+        #wheels.face_direction("N")
+        #while not wheels.START_BUTTON.is_pressed():
+        #    pass
+        #time.sleep(1)
+        #wheels.face_direction("S")
+        #while not wheels.START_BUTTON.is_pressed():
+        #    pass
+        #time.sleep(1)
+        #wheels.face_direction("E")
+        #while not wheels.START_BUTTON.is_pressed():
+        #    pass
+        #time.sleep(1)
+        #wheels.face_direction("W")
         # wheels.wait_between_moves()
         # wheels.execute_turn("CCW_90")
         # wheels.wait_between_moves()

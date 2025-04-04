@@ -4,11 +4,13 @@ from wheels import Wheels
 
 class Navigation():
     
-    def __init__(self, wheels=None, odometry=None, debug=False):
+    def __init__(self, wheels=None, debug=False):
         self.room:list[bool] = [[False]*(GRID_LENGTH*NODE_PER_GRID) for _ in range(GRID_HEIGHT*NODE_PER_GRID)]
         self.wheels = wheels
-        self.odometry = odometry
+        self.odometry = wheels.odometry
         self.debug = debug
+        if debug:
+            print("done initialising")
 
     def dfs(self, x, y):
         n, m = len(self.room), len(self.room[0])
@@ -30,7 +32,11 @@ class Navigation():
 
     def navigate_grid(self):
         # start with the grid position of the robot using odometry
+        if self.debug:
+            print("Inside navigate grid")
         x, y = self._xy_to_grid(self.odometry.get_xy(direction=self.wheels.direction))
+        if self.debug:
+            print(x, y)
         # then move onto the dfs search
         while (x, y) != (-1, -1):
             new_x, new_y = self.dfs(x, y)
