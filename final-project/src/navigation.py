@@ -34,7 +34,10 @@ class Navigation():
         # start with the grid position of the robot using odometry
         if self.debug:
             print("Inside navigate grid")
-        x, y = self._xy_to_grid(self.odometry.get_xy(direction=self.wheels.direction))
+        xy_cm = self.odometry.get_xy(direction=self.wheels.direction)
+        if self.debug:
+            print(f"Current position in cm {xy_cm}")
+        x, y = self._xy_to_grid()
         if self.debug:
             print(x, y)
         # then move onto the dfs search
