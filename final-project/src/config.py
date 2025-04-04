@@ -49,10 +49,11 @@ BATTERY_NUM = 33
 ANG_90 = 250
 RW_ADJ = -4 # Right wheel adjustment, for power
 TILE_ANG = 660
-CCW_ADJ = 0
+CCW_ADJ = -6
 BAT_34_ADJ = 32 # Battery 34 adjustment
 START_XY = (14.5,11.1) # Starting coordinates for the robot
 START_DIR = "N" # Starting direction for the robot
+ENTRY_XY = (82.1,80.7)
 EXIT_XY = (84.6,88.5) # Entrance coordinates for the robot
 POS_THRESHOLD = 8 # Threshold for position accuracy in cm
 
@@ -60,7 +61,7 @@ POS_THRESHOLD = 8 # Threshold for position accuracy in cm
 NODE_PER_GRID = 2
 GRID_HEIGHT = 2
 GRID_LENGTH = 3
-KITCHEN_ORIGIN = (48.0,72.0) # bottom left corner of the kitchen
+KITCHEN_ORIGIN = (49.5,74.0) # bottom left corner of the kitchen
 
 # Sweeper
 

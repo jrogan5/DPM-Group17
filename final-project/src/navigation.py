@@ -1,18 +1,21 @@
 
 from config import *
 from wheels import Wheels
-from utils.brick import wait_ready_sensors
+from odometry import Odometry
+from utils.brick import reset_brick, wait_ready_sensors
 import time
 
 class Navigation():
     
-    def __init__(self, wheels=None, debug=False):
+    HARD_SWEEP_DIRECTIONS: list[str] = ["E","E","N","N","W","W","W","S"]
+    
+    def __init__(self, debug=False):
         self.room:list[bool] = [[False]*(GRID_LENGTH*NODE_PER_GRID) for _ in range(GRID_HEIGHT*NODE_PER_GRID)]
-        self.wheels = wheels
-        self.odometry = wheels.odometry
         self.debug = debug
+        self.odometry = Odometry(debug=self.debug)
+        self.wheels = Wheels(debug=self.debug,odometry=self.odometry)
         if debug:
-            print("done initialising")
+            print("(Navigation) done initialising")
         
 
     def dfs(self, x, y):
@@ -65,9 +68,65 @@ class Navigation():
             for line in self.room:
                 print(line)
 
-    def return_to_origin(self):
-        "Return to the origin of the map, in absoulute coordinates"
-        pass
+    def start(self):
+        if self.odometry is None:
+            print("(Navigation) odometry not initialized")
+            return
+        if self.wheels is None:
+            print("(Navigation) wheels not initialized")
+        print("Wheels and Odometry started!")
+        pos = self.odometry.get_xy(self.wheels.direction)
+        grid_pos = nav._xy_to_grid(pos)
+        print(f"(Navigation) START: Current position: {pos}. Current grid position: {grid_pos}.")
+        # self.wheels.move_to_coord((pos[0]-20, pos[1]))
+        
+    def assume_entry_position(self):
+        if START_XY is not None and self.odometry.at_position("N",START_XY):
+            if self.debug:
+                print("OK: Assuming entry position in 5 seconds:")
+                # self.wheels.hard_code_traversal_there()
+                for i in range (0,5):
+                    print(f"...{5-i}")
+            print("(Navigation) MOVING TO ENTRY POSITION")
+            self.wheels.move_to_coord("y",(START_XY[0],58))
+            self.wheels.move_to_coord("x",(80,58))
+            self.wheels.move_to_coord("y",(78,78))
+            print("(Navigation) SUCCESS")
+            return True
+        else:
+            print(f"WARNING: Robot is not at correct START position; adjust the position manually.")
+            return False
+            
+    
+    def assume_exit_position(self):
+        if EXIT_XY is not None:
+            pos = self.odometry.get_xy(self.wheels.direction)
+            print(f"OK: Assuming EXIT position: {EXIT_XY} from current position: {pos}.")
+            self.wheels.move_to_coord("x",(EXIT_XY[0], pos[1])) # set the x coordinate
+            self.wheels.move_to_coord("y",(EXIT_XY[0], EXIT_XY[1])) # set the y coordinate
+            self.wheels.face_direction("S") # set the direction
+            if self.odometry.at_position("S", EXIT_XY):
+                print("OK: Robot is at correct EXIT position.")
+                return True
+            else:
+                print("WARNING: Robot is not at correct EXIT position; adjust the position manually.")
+                return False
+        else:
+            print("WARNING: EXIT position not set. See config.py.")
+            return False
+        
+    def return_to_start(self):
+            if EXIT_XY is not None and self.odometry.at_position("S",EXIT_XY):
+                print("OK: Returning to start.")
+                #self.hard_code_traversal_back()
+                self.wheels.move_to_coord("y",(EXIT_XY[0],78))
+                self.wheels.move_to_coord("x",(38,78))
+                self.wheels.move_to_coord("y",(38,18))
+                return True
+            else:
+                print("WARNING: Robot is not at correct EXIT position; adjust the position manually.")
+                return False
+                
 
     def _xy_to_grid(self, xy:tuple[float, float])->tuple[int, int]:
         # converts the float x,y from the odometry to the integer grid coordinates row,col
@@ -79,17 +138,57 @@ class Navigation():
             print(f"Invalid coordinates: {xy} (could not be converted to grid)")
             return (-1, -1)
         return (row, col)
+
+    def hard_sweep_grid(self):
+        if ENTRY_XY is not None and self.odometry.at_position("N",ENTRY_XY):
+            if self.debug:
+                print("OK: Starting hard sweep of the kitchen in 5 seconds...")
+                for i in range (0,5):
+                    print(f"...{5-i}")
+            print("(Navigation) HARD SWEEPING KITCHEN")
+            for direction in self.HARD_SWEEP_DIRECTIONS:
+                self.wheels.move_direction(direction, int(TILE_ANG // NODE_PER_GRID))
+                self.wheels.wait_between_moves()
+                print("Will sweep here")
+                time.sleep(2)
+            print("Sweep finished")
+            return True
+        else:
+            print("WARNING: Robot is not at correct entry position.")
+            return False
+    
+    
     
 if __name__ == "__main__":
     try:
+        nav = Navigation(debug=True)
         wait_ready_sensors(True)
+        time.sleep(1)
         print("Navigation test")
-        wheels = Wheels(debug=True)
-        nav = Navigation(wheels=wheels, debug=True)
-        nav.navigate_grid()
-        while True:
-            pass
+        nav.start()
+        # for i in range (0, 5):
+        #     pos = nav.odometry.get_xy("N")
+        #     grid_pos = nav._xy_to_grid(pos)
+        #     print(f"{i}. Current position: {pos}. Current grid position: {grid_pos}")
+        #     time.sleep(1)
+        t_wait = 3
+        print(f"Waiting {t_wait} seconds for the user to set up the robot at the start position")
+        time.sleep(t_wait)
+        if not nav.assume_entry_position():
+            raise ValueError("Failiure on entry; see above.")
+        if not nav.hard_sweep_grid():
+            raise ValueError("Failure on grid sweep; see above.")
+        if not nav.assume_exit_position():
+            raise ValueError("Failure on exit; see above.")
+        if not nav.return_to_start():
+            raise ValueError("Failiure on return; see above.")
+            
+        
+        
     except KeyboardInterrupt:
         print(f"\nUser interrupt, exiting...")
+        reset_brick()
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Exception raised: {e}")
+        reset_brick()
+

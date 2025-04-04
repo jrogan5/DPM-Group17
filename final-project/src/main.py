@@ -20,8 +20,6 @@ from estop import Estop
 from sweeper import Sweeper
 from utils.brick import reset_brick, wait_ready_sensors
 from config import *
-from wheels import Wheels
-from odometry import Odometry
 from navigation import Navigation
 
 class RobotController:
@@ -54,15 +52,8 @@ class RobotController:
             "SANDBAG DISPENSER"
             self.sandbag_dispenser = SandbagDispenser()
 
-            "ODOMETRY"
-            self.odometry = Odometry()
-
-            "WHEELS"
-            # Wheels create child threads for motors, so we don't need to create them here
-            self.wheels = Wheels(debug=True, odometry=self.odometry)
-
             "NAVIGATION"
-            self.nav = Navigation(wheels=self.wheels, odometry=self.odometry, debug=True)
+            self.nav = Navigation(debug=True)
 
             "SWEEPER"
             self.sweeper = Sweeper(debug=True)
@@ -95,9 +86,6 @@ class RobotController:
         self.color_thread = threading.Thread(target=self._monitor_colors)
         self.color_thread.start()   # detect red: fire extinguish / green: obstacle avoidance
 
-        "ODOMETRY"
-        self._start_odometry()
-    
     def stop(self):
   
         "ROBOT"
@@ -123,57 +111,19 @@ class RobotController:
         reset_brick()
         print("Robot stopped. Brick reset.")
 
-    def _start_odometry(self):
-        if self.odometry is None:
-            print("odometry not initialized")
-            return
-        if self.wheels is None:
-            print("wheels not initialized")
-        print("Wheels and Odometry started!")
-        pos = self.odometry.get_xy(self.wheels.direction)
-        print(f"(main) Current position: {pos}")
-        return pos
-        # self.wheels.move_to_coord((pos[0]-20, pos[1]))
 
-    def assume_entry_position(self):
-        if START_XY is not None and self.odometry.at_position("N",START_XY):
-            print("OK: Assuming entry position.")
-            # self.wheels.hard_code_traversal_there()
-            self.wheels.move_to_coord((START_XY[0],58))
-            self.wheels.move_to_coord((74,58))
-            self.wheels.move_to_coord((78,78))
-            return True
-        else:
-            print(f"WARNING: Robot is not at correct START position; adjust the position manually.")
-            return False
-        
-    def assume_exit_position(self):
-        if EXIT_XY is not None:
-            pos = self.odometry.get_xy(self.wheels.direction)
-            print(f"OK: Assuming EXIT position: {EXIT_XY} from current position: {pos}.")
-            self.wheels.move_to_coord((EXIT_XY[0], pos[1])) # set the x coordinate
-            self.wheels.move_to_coord((EXIT_XY[0], EXIT_XY[1])) # set the y coordinate
-            self.wheels.face_direction("S") # set the direction
-            if self.odometry.at_position("S", EXIT_XY):
-                print("OK: Robot is at correct EXIT position.")
-                return True
-            else:
-                print("WARNING: Robot is not at correct EXIT position; adjust the position manually.")
-                return False
-        else:
-            print("WARNING: EXIT position not set. See config.py.")
-            return False
-        
-    def return_to_start(self):
-            if EXIT_XY is not None and self.odometry.at_position("S",EXIT_XY):
-                print("OK: Returning to start.")
-                self.wheels.move_to_coord((EXIT_XY[0],78))
-                self.wheels.move_to_coord((38,78))
-                self.wheels.move_to_coord((38,18))
-                return True
-            else:
-                print("WARNING: Robot is not at correct EXIT position; adjust the position manually.")
-                return False
+    def test_system_integration_no_dfs(self):
+        if not self.nav.assume_entry_position():
+            raise ValueError("Failiure on entry; see above.")
+        # robot.nav.navigate_grid()
+        time.sleep(5) # test; move the robot to a random position, facing east
+        self.wheels.face_direction("S")
+        time.sleep(5)
+        if not self.nav.assume_exit_position():
+            raise ValueError("Failure on exit; see above.")
+        if not self.nav.return_to_start():
+            raise ValueError("Failiure on return; see above.")
+        print("Robot has returned to start position.")
             
     def _monitor_colors(self):
         red_count = 0  # Counter for consecutive "red" detections
@@ -226,17 +176,6 @@ if __name__ == "__main__":
         robot = RobotController()
         wait_ready_sensors(True)
         robot.start()
-        if not robot.assume_entry_position():
-            raise ValueError("Failiure on entry; see above.")
-        # robot.nav.navigate_grid()
-        time.sleep(5) # test; move the robot to a random position, facing east
-        robot.wheels.face_direction("S")
-        time.sleep(5)
-        if not robot.assume_exit_position():
-            raise ValueError("Failure on exit; see above.")
-        if not robot.return_to_start():
-            raise ValueError("Failiure on return; see above.")
-        print("Robot has returned to start position.")
     except KeyboardInterrupt:
         print("\nInterrupted by user.")
     except Exception as e:

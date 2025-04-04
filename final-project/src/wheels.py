@@ -29,12 +29,15 @@ class Wheels():
             }
         }
     
-    def __init__(self, debug=False):
+    def __init__(self, odometry:Odometry=None,debug=False):
         self.LEFT_WHEEL: Motor = Motor(LEFT_MOTOR_PORT)
         self.RIGHT_WHEEL: Motor = Motor(RIGHT_MOTOR_PORT)
         self.START_BUTTON: TouchSensor = TouchSensor(TOUCH_SENSOR_PORT)
         self.debug = debug
-        self.odometry: Odometry =Odometry(debug)
+        if odometry is not None:
+            self.odometry = odometry
+        else:
+            self.odometry: Odometry =Odometry(debug)
         self.direction = "N"
         self._direction_index: int = 0
         self.wheels_init()
@@ -157,6 +160,11 @@ class Wheels():
         cur_pos = start
         if self.debug:
             print(f"Starting: {start} Moving to: {end_pos}")
+        # if abs(x-cur_pos) < POS_THRESHOLD:
+        #     axis == "y"
+        # elif abs(y-cur_pos) < POS_THRESHOLD:
+        #     axis == "x"
+
         if axis == "y": # x difference is within  threshold -> move in y
             if y - start[1] >= 0:
                 print("condition 1")
@@ -164,7 +172,7 @@ class Wheels():
                 while forward_move_threads[0].is_alive() and forward_move_threads[1].is_alive():
                     cur_pos = self.odometry.get_xy(direction=self.direction)
                     print(f"(wheels) Current position: {cur_pos}. Moving North")
-                    if cur_pos[1] > y:
+                    if cur_pos[1] > y: # +y
                         if self.debug:
                             print("here 1")
                         break
@@ -175,13 +183,13 @@ class Wheels():
                 while forward_move_threads[0].is_alive():
                     cur_pos = self.odometry.get_xy(direction=self.direction)
                     print(f"Current position: {cur_pos}. Moving South")
-                    if y > cur_pos[1]:
+                    if y > cur_pos[1]: # -y
                         if self.debug:
                             print("here 2")
                         break
                     time.sleep(SENSOR_DELAY)
         elif axis == "x": # y difference is within threshold -> move in x
-            if x - start[0] >= 0:
+            if x - start[0] >= 0: # +x
                 print("condition 3")                
                 forward_move_threads = self.move_direction("E", magnitude=5*TILE_ANG)
                 while forward_move_threads[0].is_alive():
@@ -195,7 +203,7 @@ class Wheels():
             else:
                 print("condition 4")
                 forward_move_threads = self.move_direction("W", magnitude=5*TILE_ANG)
-                while forward_move_threads[0].is_alive():
+                while forward_move_threads[0].is_alive(): # -x
                     cur_pos = self.odometry.get_xy(direction=self.direction)
                     print(f"Current position: {cur_pos}. Moving West")
                     if x > cur_pos[0]:
@@ -205,7 +213,7 @@ class Wheels():
                     time.sleep(SENSOR_DELAY)
         else:
             if self.debug:
-                print("Invalid coordinates given; cannot move in x and y at once.")
+                print("Invalid axis given; cannot move in x and y at once.")
             return
         if forward_move_threads[0].is_alive():
             left_kill_angle = self.LEFT_WHEEL.get_position()

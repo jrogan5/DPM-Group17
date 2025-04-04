@@ -44,7 +44,7 @@ class Odometry:
 
 if __name__ == '__main__' :
     print("Testing mode: odometry")
-    tsleep=0.5
+    tsleep=0.1
     odometry = Odometry(debug=True)
     wait_ready_sensors(True)
     pos = odometry.get_xy("N")
