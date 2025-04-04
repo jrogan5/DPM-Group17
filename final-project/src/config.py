@@ -21,8 +21,8 @@ GRID_SIZE = 24.0  # Size of each grid cell in cm
 DELAY_SEC = 1  # seconds of delay between measurements
 TUNING_X= 3.4 # ((12.8-9.4)+(15.7-12.3))/2
 TUNING_Y= 3.3 # ((14.8-11.6)+(16.5-13.2))/2
-MAX_X=120 + TUNING_X #cm (see test report for derivation of tuning parameters)
-MAX_Y=120 + TUNING_Y #cm
+MAX_X=121.8 + TUNING_X #cm (see test report for derivation of tuning parameters)
+MAX_Y=121.7 + TUNING_Y #cm
 CEN_X=6.7  #cm from face of US_X, plus an additional tuning offset
 CEN_Y=8.1  #cm from face of US_Y, plus an additional tuning offset
 
