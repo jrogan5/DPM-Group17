@@ -1,6 +1,7 @@
 
 from config import *
 from wheels import Wheels
+from utils.brick import wait_ready_sensors
 
 class Navigation():
     
@@ -11,6 +12,7 @@ class Navigation():
         self.debug = debug
         if debug:
             print("done initialising")
+        
 
     def dfs(self, x, y):
         n, m = len(self.room), len(self.room[0])
@@ -76,6 +78,7 @@ class Navigation():
     
 if __name__ == "__main__":
     try:
+        wait_ready_sensors(True)
         print("Navigation test")
         wheels = Wheels(debug=True)
         nav = Navigation(wheels=wheels, debug=True)
