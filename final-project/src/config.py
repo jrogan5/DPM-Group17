@@ -47,6 +47,7 @@ SIREN_VOLUME = 80  # Volume of the siren (0-100)
 # Wheels
 BATTERY_NUM = 33
 ANG_90 = 250
+ANG_10 = int(250 // 9)
 RW_ADJ = -4 # Right wheel adjustment, for power
 TILE_ANG = 660
 CCW_ADJ = -6
