@@ -11,7 +11,7 @@ from helper_functions import *
 
 class Sweeper:
 
-    def __init__(self, wheels = None, debug=False):
+    def __init__(self, debug=False, wheels=None):
         self.SWEEP_MOTOR: Motor = Motor(SWEEP_MOTOR_PORT)
 
         self.SWEEP_MOTOR.set_limits(15, 80)
@@ -89,7 +89,7 @@ class Sweeper:
 
 
 if __name__ == "__main__":
-    sweeper = Sweeper(True)
+    sweeper = Sweeper(debug=True)
     #sweeper.sweep_motion()
     #sweeper.wait_between_moves()
     #sweeper.sweep_motion()
