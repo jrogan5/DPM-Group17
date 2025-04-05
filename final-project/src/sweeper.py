@@ -14,7 +14,7 @@ class Sweeper:
     def __init__(self, debug=False, wheels=None):
         self.SWEEP_MOTOR: Motor = Motor(SWEEP_MOTOR_PORT)
 
-        self.SWEEP_MOTOR.set_limits(15, 80)
+        self.SWEEP_MOTOR.set_limits(SWEEP_MOTOR_LIMIT, 360)
         self.SWEEP_MOTOR.reset_encoder()
         
         self.SANDBAG_DISPENSER: SandbagDispenser = SandbagDispenser()
@@ -72,13 +72,13 @@ class Sweeper:
             self.SANDBAG_DISPENSER.deploy_sandbag()
             time.sleep(2)
             self.reset_sweep_position()
-        elif color == "green":
+        elif color == "unused":
             self.wheels.execute_turn("CW_90")
             self.wait_between_moves()
             self.wheels.move_forward(100)
             self.wait_between_moves()
             
-    def move_and_sweep(self, magnitude=40, num_cycles=1)->None:
+    def move_and_sweep(self, num_cycles=1, magnitude=40)->None:
         for _ in num_cycles:
             self.full_sweep()
             self.wait_between_moves()
@@ -93,12 +93,7 @@ if __name__ == "__main__":
     #sweeper.sweep_motion()
     #sweeper.wait_between_moves()
     #sweeper.sweep_motion()
-    for i in range(7):
-        sweeper.full_sweep()
-        sweeper.wait_between_moves()
-        sweeper.wheels.move_forward(40)
-        time.sleep(0.1)
-    sweeper.reset_sweep_position()
+    sweeper.move_and_sweep(3)
 
 
     # TODO: Test number of sweep for 1 square
