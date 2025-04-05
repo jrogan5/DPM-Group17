@@ -79,7 +79,7 @@ class Sweeper:
             self.wait_between_moves()
             
     def move_and_sweep(self, num_cycles=1, magnitude=40)->None:
-        for _ in num_cycles:
+        for _ in range(num_cycles):
             self.full_sweep()
             self.wait_between_moves()
             self.wheels.move_forward(magnitude)
