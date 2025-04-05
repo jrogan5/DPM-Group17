@@ -68,5 +68,6 @@ KITCHEN_ORIGIN = (49.5,74.0) # bottom left corner of the kitchen
 
 SWEEP_MOTOR_LIMIT = 20
 SWEEP_RANGE = 190
-REFRESH_RATE = 0.05
+# "Unlimited" or number
+REFRESH_RATE = "Unlimited"
 
