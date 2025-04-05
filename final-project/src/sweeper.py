@@ -11,7 +11,7 @@ from helper_functions import *
 
 class Sweeper:
 
-    def __init__(self, debug=False):
+    def __init__(self, wheels = None, debug=False):
         self.SWEEP_MOTOR: Motor = Motor(SWEEP_MOTOR_PORT)
 
         self.SWEEP_MOTOR.set_limits(15, 80)
@@ -19,7 +19,10 @@ class Sweeper:
         
         self.SANDBAG_DISPENSER: SandbagDispenser = SandbagDispenser()
         self.DETECTOR = ColorDetector()
-        self.wheels = Wheels(debug)
+        if wheels == None:
+            self.wheels = Wheels(debug)
+        else:
+            self.wheels = wheels
         self.debug = debug
         wait_ready_sensors(True)
 
@@ -74,6 +77,15 @@ class Sweeper:
             self.wait_between_moves()
             self.wheels.move_forward(100)
             self.wait_between_moves()
+            
+    def move_and_sweep(self, magnitude=40, num_cycles=1)->None:
+        for _ in num_cycles:
+            self.full_sweep()
+            self.wait_between_moves()
+            self.wheels.move_forward(magnitude)
+            time.sleep(0.1)
+        sweeper.reset_sweep_position()
+        
 
 
 if __name__ == "__main__":

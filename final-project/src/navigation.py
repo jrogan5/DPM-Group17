@@ -2,6 +2,7 @@
 from config import *
 from wheels import Wheels
 from odometry import Odometry
+from sweeper import Sweeper
 from utils.brick import reset_brick, wait_ready_sensors
 import time
 
@@ -9,11 +10,15 @@ class Navigation():
     
     HARD_SWEEP_DIRECTIONS: list[str] = ["E","E","N","N","W","W","W","S"]
     
-    def __init__(self, debug=False):
+    def __init__(self, sweeper = None, debug=False):
         self.room:list[bool] = [[False]*(GRID_LENGTH*NODE_PER_GRID) for _ in range(GRID_HEIGHT*NODE_PER_GRID)]
         self.debug = debug
         self.odometry = Odometry(debug=self.debug)
         self.wheels = Wheels(debug=self.debug,odometry=self.odometry)
+        if sweeper == None:
+            self.sweeper = Sweeper(debug)
+        else:
+            self.sweeper = sweeper
         if debug:
             print("(Navigation) done initialising")
         

@@ -21,14 +21,14 @@ class Wheels():
     MOVEMENT_MATRIX: dict = {
         33: {
             "CCW_90": (ANG_90+CCW_ADJ, -(ANG_90+CCW_ADJ)),
-            "CW_90": (-ANG_90, ANG_90)
-            "CCW_10": (ANG_10+CCW_ADJ, -(ANG_10+CCW_ADJ))
+            "CW_90": (-ANG_90, ANG_90),
+            "CCW_10": (ANG_10+CCW_ADJ, -(ANG_10+CCW_ADJ)),
             "CW_10": (-ANG_10, ANG_10)
         },
         34: {
             "CCW_90": (ANG_90+CCW_ADJ + BAT_34_ADJ, -(ANG_90+CCW_ADJ + BAT_34_ADJ)),
-            "CW_90": (-(ANG_90+BAT_34_ADJ), ANG_90+BAT_34_ADJ)
-            "CCW_10": (ANG_10+CCW_ADJ+BAT_34_ADJ, -(ANG_10+CCW_ADJ+BAT_34_ADJ)) 
+            "CW_90": (-(ANG_90+BAT_34_ADJ), ANG_90+BAT_34_ADJ),
+            "CCW_10": (ANG_10+CCW_ADJ+BAT_34_ADJ, -(ANG_10+CCW_ADJ+BAT_34_ADJ)),
             "CW_10": (-(ANG_10+BAT_34_ADJ), ANG_10+BAT_34_ADJ)
             }
         }
