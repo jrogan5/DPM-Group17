@@ -62,7 +62,7 @@ class Sweeper:
                 #print(color)
             if color in ("red, green"):
                 break
-            if REFRESH_RATE != "UNLIMITED":
+            if type(REFRESH_RATE) == str and REFRESH_RATE.lower() != "unlimited":
                 time.sleep(REFRESH_RATE)
         if color == "red":
             pos = self.SWEEP_MOTOR.get_position()
