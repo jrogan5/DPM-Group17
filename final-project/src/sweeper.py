@@ -57,7 +57,7 @@ class Sweeper:
         if self.debug:
             print("full sweep started")
         while sweep_motor_thread.is_alive(): # To test in person
-            color = self.DETECTOR.print_color()
+            color = self.DETECTOR.detect_color()
             #if self.debug:
                 #print(color)
             if color in ("red, green"):
