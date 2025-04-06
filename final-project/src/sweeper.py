@@ -1,28 +1,18 @@
 from utils.brick import Motor, wait_ready_sensors, reset_brick
 import time
 import threading
-
-from color_sensor import ColorDetector
-from wheels import Wheels
-from sandbag import SandbagDispenser
 from config import *
 from helper_functions import *
 
 
 class Sweeper:
 
-    def __init__(self, debug=False, wheels=None):
+    def __init__(self, debug=False):
         self.SWEEP_MOTOR: Motor = Motor(SWEEP_MOTOR_PORT)
 
         self.SWEEP_MOTOR.set_limits(SWEEP_MOTOR_LIMIT, 360)
         self.SWEEP_MOTOR.reset_encoder()
-        
-        self.SANDBAG_DISPENSER: SandbagDispenser = SandbagDispenser()
-        self.DETECTOR = ColorDetector()
-        if wheels == None:
-            self.wheels = Wheels(debug)
-        else:
-            self.wheels = wheels
+        self.sweeping_on=False
         self.debug = debug
         wait_ready_sensors(True)
 
@@ -31,39 +21,53 @@ class Sweeper:
         time.sleep(0.15)
         while self.SWEEP_MOTOR.is_moving():
             pass
-        self.wheels.wait_between_moves()
-        
+                    
     def reset_sweep_position(self)->None:
         self.SWEEP_MOTOR.set_position(0)
         self.wait_between_moves()
 
     def sweep_motion(self):
         try:
-            curr_pos = self.SWEEP_MOTOR.get_position() 
-            if -5 < curr_pos and curr_pos < 5:
-                self.SWEEP_MOTOR.set_position(SWEEP_RANGE)
-            else:
-                self.reset_sweep_position()
-            self.wait_between_moves()
-
+            while self.sweeping_on:
+                if -5 < abs(self.SWEEP_MOTOR.get_position()) < 5: # If the sweeper is starting in the correct position
+                    self.SWEEP_MOTOR.set_position(SWEEP_RANGE)
+                else:
+                    self.reset_sweep_position()
+                self.wait_between_moves()
+            print("(Sweeper) Sweeping is turned off")
         except RuntimeError:
-            print("Thread ended forcibly")
+            print("(Sweeper) Thread ended forcibly")
         
+    def sweep(self)->threading.Thread:
+        self.sweep_motion_thread = threading.Thread(target=self.sweep_motion)
+        self.sweep_motion_thread.start()
+        return self.sweep_motion_thread
+
+    def kill_sweep(self, sweep_thread):
+        if sweep_thread.is_alive():    
+            pos = self.SWEEP_MOTOR.get_position()
+            print(pos)
+            force_kill_thread(sweep_thread, RuntimeError)
+            self.SWEEP_MOTOR.set_position(pos)
+        elif self.debug:
+            print("WARNING: Called kill_sweep without an active thread")
 
     def full_sweep(self):
+        time.sleep(0.1)
         sweep_motor_thread = threading.Thread(target=self.sweep_motion)
         sweep_motor_thread.start()
         color = None
         if self.debug:
             print("full sweep started")
         while sweep_motor_thread.is_alive(): # To test in person
-            color = self.DETECTOR.detect_color()
+            color = self.DETECTOR.print_color()
             #if self.debug:
                 #print(color)
-            if color in ("red, green"):
+            if color == "red":
                 break
-            if type(REFRESH_RATE) == str and REFRESH_RATE.lower() != "unlimited":
-                time.sleep(REFRESH_RATE)
+            if type(REFRESH_RATE) == str and REFRESH_RATE.lower() == "unlimited":
+                continue    
+            time.sleep(REFRESH_RATE)
         if color == "red":
             pos = self.SWEEP_MOTOR.get_position()
             print(pos)
@@ -78,6 +82,8 @@ class Sweeper:
             self.wait_between_moves()
             self.wheels.move_forward(100)
             self.wait_between_moves()
+        while sweep_motor_thread.is_alive():
+            pass
             
     def move_and_sweep(self, num_cycles=1, magnitude=40)->None:
         for _ in range(num_cycles):
@@ -94,7 +100,7 @@ if __name__ == "__main__":
     #sweeper.sweep_motion()
     #sweeper.wait_between_moves()
     #sweeper.sweep_motion()
-    sweeper.move_and_sweep(3)
+    sweeper.move_and_sweep(7)
 
 
     # TODO: Test number of sweep for 1 square

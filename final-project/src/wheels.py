@@ -50,7 +50,11 @@ class Wheels():
         "initialize the 2 wheels"
         self.LEFT_WHEEL.set_limits(30,360)
         self.RIGHT_WHEEL.set_limits(30+RW_ADJ, 360)
-    
+
+    def wheels_sweep_init(self):
+        self.LEFT_WHEEL.set_limits(30+SWEEP_POW_ADJ,360)
+        self.RIGHT_WHEEL.set_limits(30+RW_ADJ+SWEEP_POW_ADJ, 360)
+
     def _adjust_position(self, turn_to_execute)->None:
         if turn_to_execute == "CCW_90":
             self._direction_index = (self._direction_index-1)%4
@@ -215,26 +219,28 @@ class Wheels():
                             print("here 4")
                         break
                     time.sleep(SENSOR_DELAY)
+            self.stop_wheels(forward_move_threads)
         else:
             if self.debug:
                 print("Invalid axis given; cannot move in x and y at once.")
             return
+
+        
+        print(f"Input: {end_pos}. Reached position: {cur_pos}")
+    
+    def stop_wheels(self, forward_move_threads):
         if forward_move_threads[0].is_alive():
             left_kill_angle = self.LEFT_WHEEL.get_position()
             force_kill_thread(forward_move_threads[0], RuntimeError)
             self.LEFT_WHEEL.set_position(left_kill_angle)
             if self.debug:
-                print("left thread killed")
+                print("(Wheels) left thread killed")
         if forward_move_threads[1] and forward_move_threads[1].is_alive():
             right_kill_angle = self.RIGHT_WHEEL.get_position()
             force_kill_thread(forward_move_threads[1], RuntimeError)
             self.RIGHT_WHEEL.set_position(right_kill_angle)
             if self.debug:
-                print("right thread killed")
-        
-        print(f"Input: {end_pos}. Reached position: {cur_pos}")
-    
-    
+                print("(Wheels) right thread killed")
 
 if __name__ == '__main__' :
     try:

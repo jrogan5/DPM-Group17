@@ -55,10 +55,10 @@ class ColorDetector:
     def is_red(self, rgb):
 
         r, g, b = rgb
-        return r > 2.2 * g and r > 2.2 * b and g < 50
+        return r > 1.2 * g and r > 1.2 * b and r > 15
 
     def is_green(self, rgb):
-
+        return False
         r, g, b = rgb
         return g > r and g > 2 * b and g > 5
 
@@ -88,7 +88,6 @@ class ColorDetector:
         elapsed_time = f"{round(time() - self.start_time, 2):.2f}"  # Time elapsed in seconds, rounded to 2 decimals
         iteration = self.iteration
         self.iteration += 1
-        
         if color in ["red", "green"]:
             print(f"\r{timestamp} - Elapsed: {elapsed_time}s - It: {iteration} - Color: {color} (RGB: {rgb})")
         else:

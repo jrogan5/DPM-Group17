@@ -2,23 +2,20 @@
 from config import *
 from wheels import Wheels
 from odometry import Odometry
-from sweeper import Sweeper
 from utils.brick import reset_brick, wait_ready_sensors
 import time
 
 class Navigation():
     
     HARD_SWEEP_DIRECTIONS: list[str] = ["E","E","N","N","W","W","W","S"]
+    SWEEP_PATH: list[str] = [("x",(0,0)),("y",(0,0)),("x",(0,0)),("y",(0,0)),"CCW adjust"]
+
     
-    def __init__(self, sweeper = None, debug=False):
+    def __init__(self, debug=False):
         self.room:list[bool] = [[False]*(GRID_LENGTH*NODE_PER_GRID) for _ in range(GRID_HEIGHT*NODE_PER_GRID)]
         self.debug = debug
         self.odometry = Odometry(debug=self.debug)
         self.wheels = Wheels(debug=self.debug,odometry=self.odometry)
-        if sweeper == None:
-            self.sweeper = Sweeper(debug)
-        else:
-            self.sweeper = sweeper
         if debug:
             print("(Navigation) done initialising")
         
@@ -104,6 +101,7 @@ class Navigation():
             
     
     def assume_exit_position(self):
+        self.wheels.wheels_init() # after sweep, reset the motor power
         if EXIT_XY is not None:
             pos = self.odometry.get_xy(self.wheels.direction)
             print(f"OK: Assuming EXIT position: {EXIT_XY} from current position: {pos}.")
@@ -154,8 +152,8 @@ class Navigation():
             for direction in self.HARD_SWEEP_DIRECTIONS:
                 self.wheels.move_direction(direction, int(TILE_ANG // NODE_PER_GRID))
                 self.wheels.wait_between_moves()
-                print("Will sweep here")
                 time.sleep(2)
+                print("Will sweep here")
             print("Sweep finished")
             return True
         else:
@@ -181,7 +179,7 @@ if __name__ == "__main__":
         time.sleep(t_wait)
         if not nav.assume_entry_position():
             raise ValueError("Failiure on entry; see above.")
-        if not nav.hard_sweep_grid():
+        if not nav.hard_sweep_grid_no_sweeper():
             raise ValueError("Failure on grid sweep; see above.")
         if not nav.assume_exit_position():
             raise ValueError("Failure on exit; see above.")

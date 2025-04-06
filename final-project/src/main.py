@@ -36,18 +36,18 @@ class RobotController:
             # self.siren = Siren() if self.use_siren else None  
             
             "CSV"
-            mode = 'w' 
-            self.csv_path = set_csv_path(COLOR_CSV_PATH)
-            self.csv_file = open(self.csv_path, mode, newline='')
+            # mode = 'w' 
+            # self.csv_path = set_csv_path(COLOR_CSV_PATH)
+            # self.csv_file = open(self.csv_path, mode, newline='')
 
-            if mode == 'w':
-                self.csv_file.write("timestamp,elapsed_time,iteration,color,R,G,B\n")
-                self.csv_file.flush()
+            # if mode == 'w':
+            #     self.csv_file.write("timestamp,elapsed_time,iteration,color,R,G,B\n")
+            #     self.csv_file.flush()
 
             "COLOR SENSOR"
             self.color_detector = ColorDetector()
-            self.cooldown_until = 0
-            self.lock = threading.Lock()
+            # self.cooldown_until = 0
+            # self.lock = threading.Lock()
             
             "SANDBAG DISPENSER"
             self.sandbag_dispenser = SandbagDispenser()
@@ -82,9 +82,9 @@ class RobotController:
         #     self.siren_thread = threading.Thread(target=self.siren.start)
         #     self.siren_thread.start()
 
-        "COLOR SENSOR"
-        self.color_thread = threading.Thread(target=self._monitor_colors)
-        self.color_thread.start()   # detect red: fire extinguish / green: obstacle avoidance
+        # "COLOR SENSOR"
+        # self.color_thread = threading.Thread(target=self._monitor_colors)
+        # self.color_thread.start()   # detect red: fire extinguish / green: obstacle avoidance
 
     def stop(self):
   
@@ -97,28 +97,67 @@ class RobotController:
         #     self.siren_thread.join()
             
         "COLOR SENSOR"
-        self.color_thread.join()
-        self.csv_file.close()
+        # self.color_thread.join()
+        # self.csv_file.close()
         
         "ESTOP"
         self.estop.stop()
         self.estop_thread.join()
 
-        "WHEELS"
-        # self.wheels_thread.join()
-        
         "RESET"
         reset_brick()
         print("Robot stopped. Brick reset.")
 
 
+    def hard_sweep_grid(self):
+        red_count = 0
+        if ENTRY_XY is None and self.nav.odometry.at_position("N",ENTRY_XY):
+            print("WARNING: Robot is not at correct entry position.")
+            return False
+        print("(Main) HARD SWEEPING KITCHEN")
+        self.sweeper.sweeping_on = True
+        self.nav.wheels.wheels_sweep_init() # reduces the wheel power for slower sweeping
+        for path_element in self.nav.SWEEP_PATH:
+            if path_element == "CCW adjust":
+                print("CCW adjust")
+            elif path_element == "CW adjust":
+                print("CW adjust")
+            else:
+                axis,coord = path_element
+                fwd_threads = self.nav.wheels.move_to_coord(axis,coord)
+                sweep_thread = self.sweeper.sweep()
+                color = self.color_detector.detect_color()
+                if self.red_detection_routine(color=color):
+                    self.sweeper.kill_sweep()
+                    self.nav.wheels.stop_wheels()
+                    self.sandbag_dispenser.deploy_sandbag()
+                    self.nav.wheels.move_to_coord(axis,coord) # finish the current move since it was killed prematurely     
+        self.sweeper.sweeping_on = False
+        print("Finished the sweep.")
+        return True
+
+    def red_detection_routine(self,color:str):
+        if color != "red":
+            return False
+        red_count += 1
+        print(f"\rRED DETECTED ({red_count}/{COLOR_RED_CONFIRMATION_COUNT})", end=" ")
+        
+        if red_count >= COLOR_RED_CONFIRMATION_COUNT and self.sandbag_dispenser.sandbags_deployed < MAX_SANDBAGS:
+            print(f"\nFIRE CONFIRMED! Deploying sandbag...")
+            self.cooldown_until = current_time + COLOR_COOLDOWN_DURATION  # Start cooldown
+            red_count = 0  # Reset counter
+            if self.sandbag_dispenser.sandbags_deployed == MAX_SANDBAGS:
+                print("ALL SANDBAGS DEPLOYED. Stopping detection.")
+                return True
+        else:
+            return False
+
     def test_system_integration_no_dfs(self):
         if not self.nav.assume_entry_position():
             raise ValueError("Failiure on entry; see above.")
         # robot.nav.navigate_grid()
-        time.sleep(5) # test; move the robot to a random position, facing east
-        self.wheels.face_direction("S")
-        time.sleep(5)
+        if not self.hard_sweep_grid():
+            raise ValueError("Failiure on sweep; see above.")        
         if not self.nav.assume_exit_position():
             raise ValueError("Failure on exit; see above.")
         if not self.nav.return_to_start():
@@ -167,7 +206,6 @@ class RobotController:
                 else:
                     red_count = 0  # Reset if detected
                     green_count = 0
-
             time.sleep(SENSOR_DELAY)
 
 if __name__ == "__main__":
@@ -176,6 +214,7 @@ if __name__ == "__main__":
         robot = RobotController()
         wait_ready_sensors(True)
         robot.start()
+        robot.test_system_integration_no_dfs()
     except KeyboardInterrupt:
         print("\nInterrupted by user.")
     except Exception as e:

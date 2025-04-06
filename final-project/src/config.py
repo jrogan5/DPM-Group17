@@ -59,15 +59,15 @@ EXIT_XY = (84.6,88.5) # Entrance coordinates for the robot
 POS_THRESHOLD = 8 # Threshold for position accuracy in cm
 
 # Navigation (in kitchen)
-NODE_PER_GRID = 2
+NODE_PER_GRID = 4
 GRID_HEIGHT = 2
 GRID_LENGTH = 3
 KITCHEN_ORIGIN = (49.5,74.0) # bottom left corner of the kitchen
 
 # Sweeper
-
-SWEEP_MOTOR_LIMIT = 20
-SWEEP_RANGE = 190
+SWEEP_MOTOR_LIMIT = 15 #MAXIMUM WITHOUT LOSING ACCURACY IS 17 -Eric (Tested plugged to wall)
+SWEEP_RANGE = 160
+SWEEP_POW_ADJ = -10 # Slows the motion while sweeping
 # "Unlimited" or number
-REFRESH_RATE = "Unlimited"
+REFRESH_RATE = 0.1 # KEEP AT 0.1, LOWERING LOWERS ACCURACY -Eric (Tested Plugged to Wall)
 
