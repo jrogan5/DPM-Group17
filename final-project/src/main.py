@@ -110,28 +110,58 @@ class RobotController:
 
 
     def hard_sweep_grid(self):
-        red_count = 0
         if ENTRY_XY is None and self.nav.odometry.at_position("N",ENTRY_XY):
             print("WARNING: Robot is not at correct entry position.")
             return False
-        print("(Main) HARD SWEEPING KITCHEN")
-        self.sweeper.sweeping_on = True
-        self.nav.wheels.wheels_sweep_init() # reduces the wheel power for slower sweeping
-        for path_element in self.nav.SWEEP_PATH:
-            if path_element == "CCW adjust":
-                print("CCW adjust")
-            elif path_element == "CW adjust":
-                print("CW adjust")
-            else:
-                axis,coord = path_element
-                fwd_threads = self.nav.wheels.move_to_coord(axis,coord)
-                sweep_thread = self.sweeper.sweep()
-                color = self.color_detector.detect_color()
-                if self.red_detection_routine(color=color):
-                    self.sweeper.kill_sweep()
-                    self.nav.wheels.stop_wheels()
-                    self.sandbag_dispenser.deploy_sandbag()
-                    self.nav.wheels.move_to_coord(axis,coord) # finish the current move since it was killed prematurely     
+        
+        if self.sweeper.hard_sweep:
+            print("(Main) HARD SWEEPING KITCHEN")
+            self.nav.wheels.wheels_sweep_init() # reduces the wheel power for slower sweeping
+            for dir in self.nav.HARD_SWEEP_PATH:
+                for _ in (0, NODE_PER_GRID):
+                    self.nav.wheels.move_direction(dir, int(TILE_ANG // NODE_PER_GRID))
+                    self.nav.wheels.wait_between_moves()
+                    sweep_thread = self.sweeper.sweep()
+                    color = self.color_detector.detect_color()
+                    print(f"Color: {color}")
+                    if color == "red":
+                        self.sweeper.kill_sweep(sweep_thread=sweep_thread)
+                        self.sandbag_dispenser.deploy_sandbag()
+                        self.sweeper.reset_sweep_position()
+                        time.sleep(5)
+        """   # I gave up on this; ultrasonic sensors being bad.        
+        else:
+            self.sweeper.sweeping_on = True
+            self.nav.wheels.wheels_sweep_init() # reduces the wheel power for slower sweeping
+            for path_element in self.nav.SWEEP_PATH:
+                if path_element == "CCW adjust":
+                    print("CCW adjust")
+                elif path_element == "CW adjust":
+                    print("CW adjust")
+                elif path_element == "face south":
+                    print("Facing south")
+                    self.nav.wheels.face_direction("S")
+                    # sweep_thread = self.sweeper.sweep()
+                    color = self.color_detector.detect_color()
+                    if self.red_detection_routine(color=color):
+                        # self.sweeper.kill_sweep()
+                        self.nav.wheels.stop_wheels()
+                        self.sandbag_dispenser.deploy_sandbag()
+                        self.sweeper.reset_sweep_position()
+                else:
+                    print(f"Path Element: {path_element}")
+                    axis,coord = path_element
+                    fwd_threads = self.nav.wheels.move_to_coord(axis,coord)
+                    # sweep_thread = self.sweeper.sweep()
+                    color = self.color_detector.detect_color()
+                    if self.red_detection_routine(color=color):
+                        # self.sweeper.kill_sweep()
+                        self.nav.wheels.stop_wheels()
+                        self.sandbag_dispenser.deploy_sandbag()
+                        self.sweeper.reset_sweep_position()   
+                        self.nav.wheels.move_to_coord(axis,coord) # finish the current move since it was killed prematurely 
+        """
+        
         self.sweeper.sweeping_on = False
         print("Finished the sweep.")
         return True
@@ -139,13 +169,13 @@ class RobotController:
     def red_detection_routine(self,color:str):
         if color != "red":
             return False
-        red_count += 1
-        print(f"\rRED DETECTED ({red_count}/{COLOR_RED_CONFIRMATION_COUNT})", end=" ")
+        self.color_detector.red_count += 1
+        print(f"\rRED DETECTED ({self.color_detector.red_count}/{COLOR_RED_CONFIRMATION_COUNT})", end=" ")
         
-        if red_count >= COLOR_RED_CONFIRMATION_COUNT and self.sandbag_dispenser.sandbags_deployed < MAX_SANDBAGS:
+        if self.color_detector.red_count >= COLOR_RED_CONFIRMATION_COUNT and self.sandbag_dispenser.sandbags_deployed < MAX_SANDBAGS:
             print(f"\nFIRE CONFIRMED! Deploying sandbag...")
             self.cooldown_until = current_time + COLOR_COOLDOWN_DURATION  # Start cooldown
-            red_count = 0  # Reset counter
+            self.color_detector.red_count = 0  # Reset counter
             if self.sandbag_dispenser.sandbags_deployed == MAX_SANDBAGS:
                 print("ALL SANDBAGS DEPLOYED. Stopping detection.")
                 return True
@@ -153,9 +183,8 @@ class RobotController:
             return False
 
     def test_system_integration_no_dfs(self):
-        if not self.nav.assume_entry_position():
-            raise ValueError("Failiure on entry; see above.")
-        # robot.nav.navigate_grid()
+        # if not self.nav.assume_entry_position():
+        #     raise ValueError("Failiure on entry; see above.")
         if not self.hard_sweep_grid():
             raise ValueError("Failiure on sweep; see above.")        
         if not self.nav.assume_exit_position():
@@ -165,7 +194,7 @@ class RobotController:
         print("Robot has returned to start position.")
             
     def _monitor_colors(self):
-        red_count = 0  # Counter for consecutive "red" detections
+        self.color_detector.red_count = 0  # Counter for consecutive "red" detections
         green_count = 0
 
         print("Color sensor started!")
@@ -184,14 +213,14 @@ class RobotController:
                 color = self.color_detector.detect_color()
 
                 if color == "red":
-                    red_count += 1
-                    print(f"\rRED DETECTED ({red_count}/{COLOR_RED_CONFIRMATION_COUNT})", end=" ")
+                    self.color_detector.red_count += 1
+                    print(f"\rRED DETECTED ({self.color_detector.red_count}/{COLOR_RED_CONFIRMATION_COUNT})", end=" ")
                     
-                    if red_count >= COLOR_RED_CONFIRMATION_COUNT and self.sandbag_dispenser.sandbags_deployed < MAX_SANDBAGS:
+                    if self.color_detector.red_count >= COLOR_RED_CONFIRMATION_COUNT and self.sandbag_dispenser.sandbags_deployed < MAX_SANDBAGS:
                         print(f"\nFIRE CONFIRMED! Deploying sandbag...")
                         self.sandbag_dispenser.deploy_sandbag()
                         self.cooldown_until = current_time + COLOR_COOLDOWN_DURATION  # Start cooldown
-                        red_count = 0  # Reset counter
+                        self.color_detector.red_count = 0  # Reset counter
                         if self.sandbag_dispenser.sandbags_deployed == MAX_SANDBAGS:
                             print("ALL SANDBAGS DEPLOYED. Stopping detection.")
                             self.running = False
@@ -204,7 +233,7 @@ class RobotController:
                         # TODO: Obstacle Avoidance
                         green_count = 0  # Reset counter
                 else:
-                    red_count = 0  # Reset if detected
+                    self.color_detector.red_count = 0  # Reset if detected
                     green_count = 0
             time.sleep(SENSOR_DELAY)
 

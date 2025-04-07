@@ -7,8 +7,8 @@ import time
 
 class Navigation():
     
-    HARD_SWEEP_DIRECTIONS: list[str] = ["E","E","N","N","W","W","W","S"]
-    SWEEP_PATH: list[str] = [("x",(0,0)),("y",(0,0)),("x",(0,0)),("y",(0,0)),"CCW adjust"]
+    HARD_SWEEP_PATH: list[str] = ["E","N","W","W","W","S"]
+    SWEEP_PATH: list[str] = [("x",(87.0, 85.4)),("y",(77.2, 97.5)),("x",(60.0, 104.4)),"face south","CCW adjust", "CW adjust"]
 
     
     def __init__(self, debug=False):
@@ -18,7 +18,6 @@ class Navigation():
         self.wheels = Wheels(debug=self.debug,odometry=self.odometry)
         if debug:
             print("(Navigation) done initialising")
-        
 
     def dfs(self, x, y):
         n, m = len(self.room), len(self.room[0])
@@ -90,9 +89,9 @@ class Navigation():
                 for i in range (0,5):
                     print(f"...{5-i}")
             print("(Navigation) MOVING TO ENTRY POSITION")
-            self.wheels.move_to_coord("y",(START_XY[0],58))
-            self.wheels.move_to_coord("x",(80,58))
-            self.wheels.move_to_coord("y",(78,78))
+            self.wheels.move_to_coord("y",TURN1_XY)
+            self.wheels.move_to_coord("x",TURN2_XY)
+            self.wheels.move_to_coord("y",ENTRY_XY)
             print("(Navigation) SUCCESS")
             return True
         else:
@@ -105,8 +104,8 @@ class Navigation():
         if EXIT_XY is not None:
             pos = self.odometry.get_xy(self.wheels.direction)
             print(f"OK: Assuming EXIT position: {EXIT_XY} from current position: {pos}.")
-            self.wheels.move_to_coord("x",(EXIT_XY[0], pos[1])) # set the x coordinate
-            self.wheels.move_to_coord("y",(EXIT_XY[0], EXIT_XY[1])) # set the y coordinate
+            self.wheels.move_to_coord("x",EXIT_XY) # set the x coordinate
+            self.wheels.move_to_coord("y",EXIT_XY) # set the y coordinate
             self.wheels.face_direction("S") # set the direction
             if self.odometry.at_position("S", EXIT_XY):
                 print("OK: Robot is at correct EXIT position.")
@@ -122,9 +121,9 @@ class Navigation():
             if EXIT_XY is not None and self.odometry.at_position("S",EXIT_XY):
                 print("OK: Returning to start.")
                 #self.hard_code_traversal_back()
-                self.wheels.move_to_coord("y",(EXIT_XY[0],78))
-                self.wheels.move_to_coord("x",(38,78))
-                self.wheels.move_to_coord("y",(38,18))
+                self.wheels.move_to_coord("y",TURN3_XY)
+                self.wheels.move_to_coord("x",TURN4_XY)
+                self.wheels.move_to_coord("y",END_XY)
                 return True
             else:
                 print("WARNING: Robot is not at correct EXIT position; adjust the position manually.")
@@ -149,7 +148,7 @@ class Navigation():
                 for i in range (0,5):
                     print(f"...{5-i}")
             print("(Navigation) HARD SWEEPING KITCHEN")
-            for direction in self.HARD_SWEEP_DIRECTIONS:
+            for direction in self.HARD_SWEEP_PATH:
                 self.wheels.move_direction(direction, int(TILE_ANG // NODE_PER_GRID))
                 self.wheels.wait_between_moves()
                 time.sleep(2)

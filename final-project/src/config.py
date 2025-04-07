@@ -46,27 +46,33 @@ SIREN_VOLUME = 80  # Volume of the siren (0-100)
 
 # Wheels
 BATTERY_NUM = 33
-ANG_90 = 250
+ANG_90 = 220
 ANG_10 = int(250 // 9)
-RW_ADJ = -4 # Right wheel adjustment, for power
+RW_ADJ = -4.5 # Right wheel adjustment, for power
 TILE_ANG = 660
-CCW_ADJ = -6
+SWEEP_MOVE = 400
+CCW_ADJ = -2
 BAT_34_ADJ = 32 # Battery 34 adjustment
-START_XY = (14.5,11.1) # Starting coordinates for the robot
+START_XY = (17.0, 13.0) # Starting coordinates for the robot
+TURN1_XY = (15.8, 56.9) # entry
+TURN2_XY = (80.9, 61.4) # entry
+TURN3_XY = (85.9,72.1)  # exit
+TURN4_XY = (55.7, 67.2) # exit
+END_XY = (13.3, 25.2)
 START_DIR = "N" # Starting direction for the robot
-ENTRY_XY = (82.1,80.7)
-EXIT_XY = (84.6,88.5) # Entrance coordinates for the robot
+ENTRY_XY = (83.7, 80.7)
+EXIT_XY = (87.7, 89.6) # Entrance coordinates for the robot
 POS_THRESHOLD = 8 # Threshold for position accuracy in cm
 
 # Navigation (in kitchen)
-NODE_PER_GRID = 4
+NODE_PER_GRID = 3
 GRID_HEIGHT = 2
 GRID_LENGTH = 3
 KITCHEN_ORIGIN = (49.5,74.0) # bottom left corner of the kitchen
 
 # Sweeper
 SWEEP_MOTOR_LIMIT = 15 #MAXIMUM WITHOUT LOSING ACCURACY IS 17 -Eric (Tested plugged to wall)
-SWEEP_RANGE = 160
+SWEEP_RANGE = 140
 SWEEP_POW_ADJ = -10 # Slows the motion while sweeping
 # "Unlimited" or number
 REFRESH_RATE = 0.1 # KEEP AT 0.1, LOWERING LOWERS ACCURACY -Eric (Tested Plugged to Wall)

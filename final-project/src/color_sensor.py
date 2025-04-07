@@ -33,6 +33,7 @@ class ColorDetector:
             self.start_time = time()  
             self.iteration = 0
             self.csv_path = set_csv_path()
+            self.red_count = 0
 
         except Exception as e:
             print(f"Error initializing color sensor: {e}")

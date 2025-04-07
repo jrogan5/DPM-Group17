@@ -249,39 +249,39 @@ if __name__ == '__main__' :
         wait_ready_sensors(True)
         while not wheels.START_BUTTON.is_pressed():
             pass
-        wheels.move_to_coord("y", (40, 40))
-        wheels.wait_between_moves()
-        wheels.face_direction("E")
-        wheels.wait_between_moves()
-        wheels.move_to_coord("x", (50, 50))
-        #wheels.hard_code_traversal_there()
-        #time.sleep(1)
-        #wheels.face_direction("E")
-        #while not wheels.START_BUTTON.is_pressed():
-        #    pass
-        #time.sleep(1)
-        #wheels.face_direction("S")
-        #while not wheels.START_BUTTON.is_pressed():
-        #    pass
-        #time.sleep(1)
-        #wheels.face_direction("W")
-        #while not wheels.START_BUTTON.is_pressed():
-        #    pass
-        #time.sleep(1)
-        #wheels.face_direction("N")
-        #while not wheels.START_BUTTON.is_pressed():
-        #    pass
-        #time.sleep(1)
-        #wheels.face_direction("S")
-        #while not wheels.START_BUTTON.is_pressed():
-        #    pass
-        #time.sleep(1)
-        #wheels.face_direction("E")
-        #while not wheels.START_BUTTON.is_pressed():
-        #    pass
-        #time.sleep(1)
-        #wheels.face_direction("W")
+        # wheels.move_to_coord("y", (40, 40))
         # wheels.wait_between_moves()
+        # wheels.face_direction("E")
+        # wheels.wait_between_moves()
+        # wheels.move_to_coord("x", (50, 50))
+        #wheels.hard_code_traversal_there()
+        time.sleep(1)
+        wheels.face_direction("E")
+        # while not wheels.START_BUTTON.is_pressed():
+        #    pass
+        time.sleep(1)
+        wheels.face_direction("S")
+        # while not wheels.START_BUTTON.is_pressed():
+        #    pass
+        time.sleep(1)
+        wheels.face_direction("W")
+        # while not wheels.START_BUTTON.is_pressed():
+        #    pass
+        time.sleep(1)
+        wheels.face_direction("N")
+        # while not wheels.START_BUTTON.is_pressed():
+        #    pass
+        time.sleep(1)
+        wheels.face_direction("S")
+        while not wheels.START_BUTTON.is_pressed():
+           pass
+        time.sleep(1)
+        wheels.face_direction("E")
+        while not wheels.START_BUTTON.is_pressed():
+           pass
+        time.sleep(1)
+        wheels.face_direction("W")
+        wheels.wait_between_moves()
         # wheels.execute_turn("CCW_90")
         # wheels.wait_between_moves()
         # wheels.execute_turn("CW_90")

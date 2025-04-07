@@ -13,6 +13,7 @@ class Sweeper:
         self.SWEEP_MOTOR.set_limits(SWEEP_MOTOR_LIMIT, 360)
         self.SWEEP_MOTOR.reset_encoder()
         self.sweeping_on=False
+        self.hard_sweep=True
         self.debug = debug
         wait_ready_sensors(True)
 
@@ -28,12 +29,11 @@ class Sweeper:
 
     def sweep_motion(self):
         try:
-            while self.sweeping_on:
-                if -5 < abs(self.SWEEP_MOTOR.get_position()) < 5: # If the sweeper is starting in the correct position
-                    self.SWEEP_MOTOR.set_position(SWEEP_RANGE)
-                else:
-                    self.reset_sweep_position()
-                self.wait_between_moves()
+            if -5 < abs(self.SWEEP_MOTOR.get_position()) < 5: # If the sweeper is starting in the correct position
+                self.SWEEP_MOTOR.set_position(SWEEP_RANGE)
+            else:
+                self.reset_sweep_position()
+            self.wait_between_moves()
             print("(Sweeper) Sweeping is turned off")
         except RuntimeError:
             print("(Sweeper) Thread ended forcibly")
@@ -85,13 +85,13 @@ class Sweeper:
         while sweep_motor_thread.is_alive():
             pass
             
-    def move_and_sweep(self, num_cycles=1, magnitude=40)->None:
-        for _ in range(num_cycles):
-            self.full_sweep()
-            self.wait_between_moves()
-            self.wheels.move_forward(magnitude)
-            time.sleep(0.1)
-        sweeper.reset_sweep_position()
+    # def move_and_sweep(self, num_cycles=1, magnitude=40)->None:
+    #     for _ in range(num_cycles):
+    #         self.full_sweep()
+    #         self.wait_between_moves()
+    #         self.wheels.move_forward(magnitude)
+    #         time.sleep(0.1)
+    #     sweeper.reset_sweep_position()
         
 
 
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     #sweeper.sweep_motion()
     #sweeper.wait_between_moves()
     #sweeper.sweep_motion()
-    sweeper.move_and_sweep(7)
+    # sweeper.move_and_sweep(7)
 
 
     # TODO: Test number of sweep for 1 square
