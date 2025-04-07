@@ -54,7 +54,6 @@ class ColorDetector:
         sleep(0.05)
 
     def is_red(self, rgb):
-
         r, g, b = rgb
         return r > 2 * g and r > 2 * b and r > 5
 

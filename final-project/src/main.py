@@ -25,7 +25,7 @@ from navigation import Navigation
 class RobotController:
 
     def __init__(self):
-
+        self.reduced = True
         try:
             "ESTOP"
             self.estop = Estop()
@@ -54,12 +54,16 @@ class RobotController:
 
             "NAVIGATION"
             self.nav = Navigation(debug=True)
+            self.move_threads = None
 
             "SWEEPER"
             self.sweeper = Sweeper(debug=True)
+            self.sweep_thread = None
 
             "ROBOT"
             self.running = False
+
+
 
         except Exception as e:
             print(f"Error initializing robot: {e}")
@@ -99,6 +103,14 @@ class RobotController:
         "COLOR SENSOR"
         # self.color_thread.join()
         # self.csv_file.close()
+
+        "SWEEPER"
+        if self.sweep_thread is not None:
+            if self.sweep_thread.is_alive():
+                self.sweep_thread.join()
+
+        "NAVIGATION"
+
         
         "ESTOP"
         self.estop.stop()
@@ -108,27 +120,39 @@ class RobotController:
         reset_brick()
         print("Robot stopped. Brick reset.")
 
+    def dprint(self,msg:str):
+        if self.debug:
+            print("(Main) " + msg)
 
     def hard_sweep_grid(self):
         if ENTRY_XY is None and self.nav.odometry.at_position("N",ENTRY_XY):
             print("WARNING: Robot is not at correct entry position.")
             return False
-        
+        if self.reduced:
+            self.dprint("Skipping the sweep")
+            return True
+        self.sweeper.sweeping_on = True
         if self.sweeper.hard_sweep:
             print("(Main) HARD SWEEPING KITCHEN")
             self.nav.wheels.wheels_sweep_init() # reduces the wheel power for slower sweeping
             for dir in self.nav.HARD_SWEEP_PATH:
-                for _ in (0, NODE_PER_GRID):
-                    self.nav.wheels.move_direction(dir, int(TILE_ANG // NODE_PER_GRID))
-                    self.nav.wheels.wait_between_moves()
-                    sweep_thread = self.sweeper.sweep()
-                    color = self.color_detector.detect_color()
-                    print(f"Color: {color}")
-                    if color == "red":
-                        self.sweeper.kill_sweep(sweep_thread=sweep_thread)
-                        self.sandbag_dispenser.deploy_sandbag()
-                        self.sweeper.reset_sweep_position()
-                        time.sleep(5)
+                self.sweep_thread = self.sweeper.sweep()
+                print(f"direction: {dir}")
+                time.sleep(3)
+                # self.move_threads = self.nav.wheels.move_direction(dir, SWEEP_MOVE)
+                # while self.move_threads[0].is_alive():
+                #     color = self.color_detector.detect_color()
+                #     print(f"Color: {color}")
+                #     time.sleep(REFRESH_RATE)
+                #     if self.red_detection_routine(color):
+                #         self.sweeper.kill_sweep(sweep_thread=self.sweep_thread)
+                #         # self.nav.wheels.stop_wheels(forward_move_threads=self.move_threads)
+                #         self.sandbag_dispenser.deploy_sandbag()
+                #         self.sweeper.reset_sweep_position()
+                #         time.sleep(5)
+            print("(Main) ending hardcoded sweep routine")
+            self.sweeper.sweeping_on = False    
+        
         """   # I gave up on this; ultrasonic sensors being bad.        
         else:
             self.sweeper.sweeping_on = True
@@ -183,16 +207,21 @@ class RobotController:
             return False
 
     def test_system_integration_no_dfs(self):
-        # if not self.nav.assume_entry_position():
-        #     raise ValueError("Failiure on entry; see above.")
+        if not self.nav.assume_entry_position():
+            raise ValueError("Failiure on entry; see above.")
         if not self.hard_sweep_grid():
             raise ValueError("Failiure on sweep; see above.")        
-        if not self.nav.assume_exit_position():
-            raise ValueError("Failure on exit; see above.")
+        if self.reduced:
+            self.dprint("Reduced version: just facing south and exiting room")
+            self.nav.wheels.face_direction("S")
+        else:
+            if not self.nav.assume_exit_position():
+                raise ValueError("Failure on exit; see above.")
         if not self.nav.return_to_start():
             raise ValueError("Failiure on return; see above.")
         print("Robot has returned to start position.")
             
+    # I haven't touched this
     def _monitor_colors(self):
         self.color_detector.red_count = 0  # Counter for consecutive "red" detections
         green_count = 0

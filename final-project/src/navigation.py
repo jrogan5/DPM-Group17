@@ -7,7 +7,7 @@ import time
 
 class Navigation():
     
-    HARD_SWEEP_PATH: list[str] = ["E","N","W","W","W","S"]
+    HARD_SWEEP_PATH: list[str] = ["E","E","N","N","W","W","W","W","S","S"]
     SWEEP_PATH: list[str] = [("x",(87.0, 85.4)),("y",(77.2, 97.5)),("x",(60.0, 104.4)),"face south","CCW adjust", "CW adjust"]
 
     

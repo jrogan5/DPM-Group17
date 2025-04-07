@@ -17,6 +17,9 @@ class Sweeper:
         self.debug = debug
         wait_ready_sensors(True)
 
+    def _dprint(self,msg:str):
+        if self.debug:
+            print("(Sweeper) " + msg)
 
     def wait_between_moves(self)->None: # To test in Person
         time.sleep(0.15)
@@ -29,11 +32,16 @@ class Sweeper:
 
     def sweep_motion(self):
         try:
-            if -5 < abs(self.SWEEP_MOTOR.get_position()) < 5: # If the sweeper is starting in the correct position
-                self.SWEEP_MOTOR.set_position(SWEEP_RANGE)
-            else:
-                self.reset_sweep_position()
-            self.wait_between_moves()
+            while self.sweeping_on:
+                self._dprint("sweep motion loop...")
+                if -5 < abs(self.SWEEP_MOTOR.get_position()) < 5: # If the sweeper is starting in the correct position
+                    self._dprint("sweep range set")
+                    self.SWEEP_MOTOR.set_position(SWEEP_RANGE)
+                else:
+                    self._dprint("sweep range reset")
+                    self.reset_sweep_position()
+                time.sleep(REFRESH_RATE)
+                self.wait_between_moves()
             print("(Sweeper) Sweeping is turned off")
         except RuntimeError:
             print("(Sweeper) Thread ended forcibly")

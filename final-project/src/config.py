@@ -19,8 +19,8 @@ GRID_SIZE = 24.0  # Size of each grid cell in cm
 
 # Odometry Constants
 DELAY_SEC = 1  # seconds of delay between measurements
-TUNING_X= 3.4 # ((12.8-9.4)+(15.7-12.3))/2
-TUNING_Y= 3.3 # ((14.8-11.6)+(16.5-13.2))/2
+TUNING_X= 0 # ((12.8-9.4)+(15.7-12.3))/2 = 3.3
+TUNING_Y= 0 # ((14.8-11.6)+(16.5-13.2))/2 = 3.3
 MAX_X=121.8 + TUNING_X #cm (see test report for derivation of tuning parameters)
 MAX_Y=121.7 + TUNING_Y #cm
 CEN_X=6.7  #cm from face of US_X, plus an additional tuning offset
@@ -46,16 +46,16 @@ SIREN_VOLUME = 80  # Volume of the siren (0-100)
 
 # Wheels
 BATTERY_NUM = 33
-ANG_90 = 220
+ANG_90 = 233
 ANG_10 = int(250 // 9)
 RW_ADJ = -4.5 # Right wheel adjustment, for power
 TILE_ANG = 660
-SWEEP_MOVE = 400
+SWEEP_MOVE = 200
 CCW_ADJ = -2
 BAT_34_ADJ = 32 # Battery 34 adjustment
 START_XY = (17.0, 13.0) # Starting coordinates for the robot
 TURN1_XY = (15.8, 56.9) # entry
-TURN2_XY = (80.9, 61.4) # entry
+TURN2_XY = (82.5,58.0) # entry
 TURN3_XY = (85.9,72.1)  # exit
 TURN4_XY = (55.7, 67.2) # exit
 END_XY = (13.3, 25.2)
@@ -71,9 +71,9 @@ GRID_LENGTH = 3
 KITCHEN_ORIGIN = (49.5,74.0) # bottom left corner of the kitchen
 
 # Sweeper
-SWEEP_MOTOR_LIMIT = 15 #MAXIMUM WITHOUT LOSING ACCURACY IS 17 -Eric (Tested plugged to wall)
+SWEEP_MOTOR_LIMIT = 10 #MAXIMUM WITHOUT LOSING ACCURACY IS 17 -Eric (Tested plugged to wall)
 SWEEP_RANGE = 140
-SWEEP_POW_ADJ = -10 # Slows the motion while sweeping
+SWEEP_POW_ADJ = -10 # Slows the FORWARD motion while sweeping
 # "Unlimited" or number
 REFRESH_RATE = 0.1 # KEEP AT 0.1, LOWERING LOWERS ACCURACY -Eric (Tested Plugged to Wall)
 
