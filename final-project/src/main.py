@@ -124,7 +124,7 @@ class RobotController:
         if self.debug:
             print("(Main) " + msg)
 
-    def hard_sweep_grid(self):
+    def sweep_grid(self):
         if ENTRY_XY is None and self.nav.odometry.at_position("N",ENTRY_XY):
             print("WARNING: Robot is not at correct entry position.")
             return False
@@ -153,7 +153,7 @@ class RobotController:
             print("(Main) ending hardcoded sweep routine")
             self.sweeper.sweeping_on = False    
         
-        """   # I gave up on this; ultrasonic sensors being bad.        
+        # I gave up on this; ultrasonic sensors being bad.        
         else:
             self.sweeper.sweeping_on = True
             self.nav.wheels.wheels_sweep_init() # reduces the wheel power for slower sweeping
@@ -165,7 +165,7 @@ class RobotController:
                 elif path_element == "face south":
                     print("Facing south")
                     self.nav.wheels.face_direction("S")
-                    # sweep_thread = self.sweeper.sweep()
+                    sweep_thread = self.sweeper.sweep()
                     color = self.color_detector.detect_color()
                     if self.red_detection_routine(color=color):
                         # self.sweeper.kill_sweep()
@@ -175,17 +175,15 @@ class RobotController:
                 else:
                     print(f"Path Element: {path_element}")
                     axis,coord = path_element
-                    fwd_threads = self.nav.wheels.move_to_coord(axis,coord)
-                    # sweep_thread = self.sweeper.sweep()
+                    self.move_threads = self.nav.wheels.move_to_coord(axis,coord)
+                    self.sweep_thread = self.sweeper.sweep()
                     color = self.color_detector.detect_color()
                     if self.red_detection_routine(color=color):
-                        # self.sweeper.kill_sweep()
-                        self.nav.wheels.stop_wheels()
+                        self.sweeper.kill_sweep(sweep_thread=self.sweep_thread)
+                        self.nav.wheels.stop_wheels(forward_move_threads=self.move_threads)
                         self.sandbag_dispenser.deploy_sandbag()
                         self.sweeper.reset_sweep_position()   
-                        self.nav.wheels.move_to_coord(axis,coord) # finish the current move since it was killed prematurely 
-        """
-        
+                        self.nav.wheels.move_to_coord(axis,coord) # finish the current move since it was killed prematurely  
         self.sweeper.sweeping_on = False
         print("Finished the sweep.")
         return True
@@ -209,7 +207,7 @@ class RobotController:
     def test_system_integration_no_dfs(self):
         if not self.nav.assume_entry_position():
             raise ValueError("Failiure on entry; see above.")
-        if not self.hard_sweep_grid():
+        if not self.sweep_grid():
             raise ValueError("Failiure on sweep; see above.")        
         if self.reduced:
             self.dprint("Reduced version: just facing south and exiting room")
