@@ -31,13 +31,15 @@ MAX_SANDBAGS = 2  # Maximum number of sandbags to deploy
 SANDBAG_DEFAULT_DEG = 92  # Degrees to rotate for one sandbag deployment
 SANDBAG_DEFAULT_DPS = 360  # Degrees per second for motor speed
 SANDBAG_DEFAULT_POWER = 30
+SANDBAY_DELAY = 3
 
 # Color Detection
 SENSOR_DELAY = 0.1  # Delay between sensor readings (seconds)
 COLOR_CSV_PATH = "src/data/color_log.csv"
-COLOR_RED_CONFIRMATION_COUNT = 5
-COLOR_GREEN_CONFIRMATION_COUNT = 5
+COLOR_RED_CONFIRMATION_COUNT = 2
+COLOR_GREEN_CONFIRMATION_COUNT = 2
 COLOR_COOLDOWN_DURATION = 10.0
+NONE_RESET_THRESH = 7
 
 # Siren
 SIREN_DURATION = 0.5  # Duration of between siren note (seconds)
@@ -46,12 +48,12 @@ SIREN_VOLUME = 80  # Volume of the siren (0-100)
 
 # Wheels
 BATTERY_NUM = 33
-ANG_90 = 233
+ANG_90 = 235
 ANG_10 = int(250 // 9)
-RW_ADJ = -4.5 # Right wheel adjustment, for power
+RW_ADJ = -3.7 # Right wheel adjustment, for power
 TILE_ANG = 660
-SWEEP_MOVE = 200
-CCW_ADJ = -2
+SWEEP_MOVE = 100
+CCW_ADJ = -9
 BAT_34_ADJ = 32 # Battery 34 adjustment
 START_XY = (17.0, 13.0) # Starting coordinates for the robot
 TURN1_XY = (15.8, 56.9) # entry
@@ -71,9 +73,9 @@ GRID_LENGTH = 3
 KITCHEN_ORIGIN = (49.5,74.0) # bottom left corner of the kitchen
 
 # Sweeper
-SWEEP_MOTOR_LIMIT = 10 #MAXIMUM WITHOUT LOSING ACCURACY IS 17 -Eric (Tested plugged to wall)
+SWEEP_MOTOR_LIMIT = 13 #MAXIMUM WITHOUT LOSING ACCURACY IS 17 -Eric (Tested plugged to wall)
 SWEEP_RANGE = 140
-SWEEP_POW_ADJ = -10 # Slows the FORWARD motion while sweeping
+SWEEP_POW_ADJ = 0 # Slows the FORWARD motion while sweeping
 # "Unlimited" or number
 REFRESH_RATE = 0.1 # KEEP AT 0.1, LOWERING LOWERS ACCURACY -Eric (Tested Plugged to Wall)
 

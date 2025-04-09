@@ -33,14 +33,17 @@ class Sweeper:
     def sweep_motion(self):
         try:
             while self.sweeping_on:
-                self.dprint("sweep motion loop...")
-                if -5 < abs(self.SWEEP_MOTOR.get_position()) < 5: # If the sweeper is starting in the correct position
+                if abs(self.SWEEP_MOTOR.get_position()) < 10: # If the sweeper is starting in the correct position
                     self.dprint("sweep range set")
                     self.SWEEP_MOTOR.set_position(SWEEP_RANGE)
                 else:
                     self.dprint("sweep range reset")
                     self.reset_sweep_position()
                     self.sweeping_on = False # One iteration
+                    if abs(self.SWEEP_MOTOR.get_position()) >= 10:
+                        self.SWEEP_MOTOR.set_position(-2)
+                        self.wait_between_moves()
+                        self.SWEEP_MOTOR.reset_encoder()
                 time.sleep(REFRESH_RATE)
                 self.wait_between_moves()
             print("(Sweeper) Sweeping is turned off")
@@ -61,6 +64,7 @@ class Sweeper:
             self.sweeping_on = False
             self.wait_between_moves()
             self.dprint("sweep motion killed")
+        else:
             self.dprint("WARNING: Called kill_sweep without an active thread")
 
     def full_sweep(self):
@@ -107,7 +111,28 @@ class Sweeper:
 
 
 if __name__ == "__main__":
-    sweeper = Sweeper(debug=True)
+    try:
+        sweeper = Sweeper(debug=True)
+        for i in range (0,10):
+            print("restarting")
+            sweeper.sweeping_on = True
+            thread = sweeper.sweep()
+            if not thread.is_alive():
+                sweeper.dprint("Failed to create a thread. Exiting.")
+                raise RuntimeException
+            wait(1)
+            if i == 5:
+                sweeper.kill_sweep(thread)
+                break
+            while thread.is_alive():
+                pass
+            wait(0.5)
+            print("Thread ended")
+            print(i)
+    except Exception as e:
+        print(f"Raised: {e}")
+    finally:
+        print("exiting")
     #sweeper.sweep_motion()
     #sweeper.wait_between_moves()
     #sweeper.sweep_motion()

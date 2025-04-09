@@ -34,6 +34,7 @@ class ColorDetector:
             self.iteration = 0
             self.csv_path = set_csv_path()
             self.red_count = 0
+            self.green_count = 0
 
         except Exception as e:
             print(f"Error initializing color sensor: {e}")
@@ -58,7 +59,6 @@ class ColorDetector:
         return r > 2 * g and r > 2 * b and r > 5
 
     def is_green(self, rgb):
-        return False
         r, g, b = rgb
         return g > r and g > 2 * b and g > 5
 

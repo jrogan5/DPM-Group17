@@ -14,7 +14,7 @@ import csv
 import threading
 import time
 from color_sensor import ColorDetector, set_csv_path
-from helper_functions import force_kill_thread
+from helper_functions import custom_hook, force_kill_thread
 from sandbag import SandbagDispenser
 from siren import Siren
 from estop import Estop
@@ -22,20 +22,23 @@ from sweeper import Sweeper
 from utils.brick import reset_brick, wait_ready_sensors
 from config import *
 from navigation import Navigation
+from helper_functions import *
 
 class RobotController:
 
     def __init__(self):
         try:
+            self.debug = True
+            threading.excepthook = custom_hook # safely catches unexpected exceptions
 
             "ESTOP"
             self.estop = Estop()
             self.estop_thread = None
             
-            # "SIREN"
-            # use_siren = False
-            # self.use_siren = use_siren
-            # self.siren = Siren() if self.use_siren else None  
+            "SIREN"
+            use_siren = False
+            self.use_siren = use_siren
+            self.siren = Siren() if self.use_siren else None  
             
             "CSV"
             # mode = 'w' 
@@ -48,6 +51,8 @@ class RobotController:
 
             "COLOR SENSOR"
             self.color_detector = ColorDetector()
+            self.red_count_reset = 0
+            self.green_count_reset = 0
             # self.cooldown_until = 0
             # self.lock = threading.Lock()
             
@@ -62,7 +67,6 @@ class RobotController:
             self.sweeper = Sweeper(debug=True)
             self.sweep_thread = None
             self.hard_sweep = True
-            self.sweeping_on = False
 
             "ROBOT"
             self.reduced = False # True if we are skipping the search and sweep
@@ -82,41 +86,59 @@ class RobotController:
             print("(Main) " + msg)
 
     def sweep_grid(self):
-        # Function to sweep the grid, with various levels of functionality. 
-        if ENTRY_XY is None and self.nav.odometry.at_position("N",ENTRY_XY):
-            print("WARNING: Robot is not at correct entry position.")
-            return False
-        if self.reduced:
-            self.dprint("Skipping the sweep")
-            return True
+        self.nav.wheels.wheels_sweep_init() # reduces the wheel power for slower sweeping
         if self.sweeper.hard_sweep: # Use hardcoded values for angular displacement of wheels
             print("(Main) HARD SWEEPING KITCHEN")
             for dir,sign in self.nav.HARD_SWEEP_PATH:
-                print(f"direction: {dir}. Sign of magnitude: {sign}")
+                self.dprint(f"direction: {dir}. Sign of magnitude: {sign}")
                 if sign == "fwd":
                     self.move_threads = self.nav.wheels.move_direction(dir, SWEEP_MOVE)
                 if sign == "rev":
                     self.move_threads = self.nav.wheels.move_direction(dir, -SWEEP_MOVE)
                 while self.move_threads[1].is_alive():
                     pass # wait until we have reached the place to sweep
-                if sign == "rev":
+                # wait(0.5)
+                if sign == "rev" or self.sandbag_dispenser.sandbags_deployed == 2:
                     continue # don't sweep if we are moving backwards
-                self.sweeping_on = True
+                    
+                self.sweeper.sweeping_on = True
                 self.sweep_thread = self.sweeper.sweep() #execute a single sweep in a thread
+                # wait(0.5)
                 while self.sweep_thread.is_alive():
                     color = self.color_detector.detect_color()
+                    print(color)
                     if self.red_detection_routine(color):
+                        deployed = True
                         self.sweeper.kill_sweep(sweep_thread=self.sweep_thread)
+                        wait(1)
                         self.sandbag_dispenser.deploy_sandbag()
+                        wait(1)
+                        self.sweeper.reset_sweep_position() 
+                    if self.green_detection_routine(color):
+                        self.sweeper.kill_sweep(sweep_thread=self.sweep_thread)
+                        wait(1)
+                        self.sweeper.reset_sweep_position()   
+                        self.move_threads = self.nav.wheels.move_direction("N", -150)
+                        while self.move_threads[1].is_alive():
+                            pass
+                        wait(5)
+                        self.move_threads = self.nav.wheels.move_direction("N", 150)
+                        while self.move_threads[1].is_alive():
+                            pass
                     time.sleep(REFRESH_RATE)
                 self.dprint("Sweep finished. Next sweep iteration.")
-
             print("(Main) ending hardcoded sweep routine")
-            self.sweeper.sweeping_on = False    
-        
+            return True 
+        # Function to sweep the grid, with various levels of functionality. 
+        if ENTRY_XY is None and not self.nav.odometry.at_position("N",ENTRY_XY):
+            print("WARNING: Robot is not at correct entry position.")
+            return False
+        if self.reduced:
+            self.dprint("Skipping the sweep")
+            return True
+
         else:  # Relying on Ultrasonic Sensor Odometry        
             self.sweeper.sweeping_on = True
-            self.nav.wheels.wheels_sweep_init() # reduces the wheel power for slower sweeping
             for path_element in self.nav.SWEEP_PATH:
                 if path_element == "CCW adjust":
                     print("CCW adjust")
@@ -150,6 +172,9 @@ class RobotController:
 
     def red_detection_routine(self,color:str):
         if color != "red":
+            self.red_count_reset += 1
+            if self.red_count_reset >= NONE_RESET_THRESH:
+                self.color_detector.red_count = 0
             return False
         self.color_detector.red_count += 1
         print(f"\rRED DETECTED ({self.color_detector.red_count}/{COLOR_RED_CONFIRMATION_COUNT})", end=" ")
@@ -157,17 +182,36 @@ class RobotController:
         if self.color_detector.red_count >= COLOR_RED_CONFIRMATION_COUNT and self.sandbag_dispenser.sandbags_deployed < MAX_SANDBAGS:
             print(f"\nFIRE CONFIRMED! Deploying sandbag...")
             self.color_detector.red_count = 0  # Reset counter
-            if self.sandbag_dispenser.sandbags_deployed == MAX_SANDBAGS:
-                print("ALL SANDBAGS DEPLOYED. Stopping detection.")
-                return True
+            return True
         else:
             return False
 
+    def green_detection_routine(self,color:str):
+        if color != "green":
+            self.green_count_reset += 1
+            if self.green_count_reset >= NONE_RESET_THRESH:
+                self.color_detector.green_count = 0
+            return False
+
+        self.color_detector.green_count += 1
+        print(f"\rGREEN DETECTED ({self.color_detector.green_count}/{COLOR_GREEN_CONFIRMATION_COUNT})", end=" ")
+        if self.color_detector.green_count >= COLOR_GREEN_CONFIRMATION_COUNT:
+            print(f"\nOBSTACLE CONFIMRED! Activating obstacle avoidance...")
+            self.color_detector.green_count = 0  # Reset counter
+            return True
+        else:
+            return False
+
+
     def test_system_integration_no_dfs(self):
+        print("Main Thread Started!")
         if not self.nav.assume_entry_position():
             raise ValueError("Failiure on entry; see above.")
+        if self.use_siren:
+            if self.siren_thread.is_alive():
+                force_kill_thread(self.siren_thread, RuntimeError)
         if not self.sweep_grid():
-            raise ValueError("Failiure on sweep; see above.")   
+            raise ValueError("Failiure on sweep; see above.") 
         if self.reduced:
             self.dprint("Reduced version: just facing south and exiting room")
             self.nav.wheels.face_direction("S")
@@ -184,17 +228,17 @@ class RobotController:
 
         "ROBOT"
         self.running = True
-        self.main_thead = threading.Thread(target=robot.test_system_integration_no_dfs)
-        
+        self.main_thread = threading.Thread(target=self.test_system_integration_no_dfs)
+        self.main_thread.start()
 
         "ESTOP"
         self.estop_thread = threading.Thread(target=self.estop.start)
         self.estop_thread.start()
 
-        # "SIREN"
-        # if self.use_siren:
-        #     self.siren_thread = threading.Thread(target=self.siren.start)
-        #     self.siren_thread.start()
+        "SIREN"
+        if self.use_siren:
+            self.siren_thread = threading.Thread(target=self.siren.start)
+            self.siren_thread.start()
 
         # "COLOR SENSOR"
         # self.color_thread = threading.Thread(target=self._monitor_colors)
@@ -204,11 +248,14 @@ class RobotController:
   
         "ROBOT"
         self.running = False
+        if self.main_thread.is_alive():
+            force_kill_thread(self.main_thread, RuntimeError)
+        print("Main Thread Stopped.")
         
-        # "SIREN"
-        # if self.use_siren:
-        #     self.siren.stop()
-        #     self.siren_thread.join()
+        "SIREN"
+        if self.use_siren:
+            self.siren.stop()
+            self.siren_thread.join()
             
         "COLOR SENSOR"
         # self.color_thread.join()
@@ -218,7 +265,7 @@ class RobotController:
         if self.sweep_thread is not None:
             if self.sweep_thread.is_alive():
                 self.sweeper.kill_sweep(sweep_thread=self.sweep_thread)
-                self.sweeping_on = False
+                self.sweeper.sweeping_on = False
         print("Sweeper stopped.")
 
         "NAVIGATION"
@@ -286,7 +333,8 @@ if __name__ == "__main__":
         robot = RobotController()
         wait_ready_sensors(True)
         robot.start()
-        while robot.main_thead.is_alive() and robot.estop_thread.is_alive():
+        while robot.main_thread.is_alive() and robot.estop_thread.is_alive():
+            robot.dprint("Here in the top level loop")
             time.sleep(1)
     except KeyboardInterrupt:
         print("\nInterrupted by user.")

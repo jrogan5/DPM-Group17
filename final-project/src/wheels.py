@@ -59,6 +59,10 @@ class Wheels():
         self.LEFT_WHEEL.set_limits(30+SWEEP_POW_ADJ,360)
         self.RIGHT_WHEEL.set_limits(30+RW_ADJ+SWEEP_POW_ADJ, 360)
 
+    def wheels_return_init(self):
+        self.LEFT_WHEEL.set_limits(30,360)
+        self.RIGHT_WHEEL.set_limits(30+1.5*RW_ADJ, 360)
+
     def _adjust_position(self, turn_to_execute)->None:
         if turn_to_execute == "CCW_90":
             self._direction_index = (self._direction_index-1)%4
@@ -143,28 +147,24 @@ class Wheels():
             pass
 
     def hard_code_traversal_there(self)->None:
-        self.move_forward(2*TILE_ANG)
+        self.move_direction("N", 2*TILE_ANG-5)
         self.wait_between_moves()
-        self.execute_turn("CW_90")
+        self.move_direction("E", 3*TILE_ANG-80)
         self.wait_between_moves()
-        self.move_forward(3*TILE_ANG)
-        self.wait_between_moves()
-        self.execute_turn("CCW_90")
-        self.wait_between_moves()
-        self.move_forward_1()
+        self.move_direction("N", 80)
         self.wait_between_moves()
 
+
+
+
     def hard_code_traversal_back(self)->None:
-        self.move_forward_1()
+        self.move_direction("N", -80)
         self.wait_between_moves()
-        self.execute_turn("CW_90")
+        self.move_direction("W", 3*TILE_ANG-80)
         self.wait_between_moves()
-        self.move_forward(3*TILE_ANG)
+        self.move_direction("S", 2*TILE_ANG-30)
         self.wait_between_moves()
-        self.execute_turn("CCW_90")
-        self.wait_between_moves()
-        self.move_forward(3*TILE_ANG)
-        self.wait_between_moves()
+
         
     def move_to_coord(self, axis:str, end_pos:tuple[int, int])->None:
         start = self.odometry.get_xy(direction=self.direction)
