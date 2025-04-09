@@ -30,7 +30,6 @@ class RobotController:
 
             "ESTOP"
             self.estop = Estop()
-            self.estop_event = threading.Event()
             self.estop_thread = None
             
             # "SIREN"

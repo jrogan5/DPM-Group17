@@ -46,6 +46,10 @@ class Wheels():
         self._direction_index: int = 0
         self.wheels_init()
 
+    def dprint(self,msg:str):
+        if self.debug:
+            print("(Wheels) " + msg)
+
     def wheels_init(self):
         "initialize the 2 wheels"
         self.LEFT_WHEEL.set_limits(30,360)
@@ -175,18 +179,18 @@ class Wheels():
 
         if axis == "y": # x difference is within  threshold -> move in y
             if y - start[1] >= 0:
-                print("condition 1")
+                self.dprint("condition 1")
                 forward_move_threads = self.move_direction("N", magnitude=5*TILE_ANG)
                 while forward_move_threads[0].is_alive() and forward_move_threads[1].is_alive():
                     cur_pos = self.odometry.get_xy(direction=self.direction)
-                    print(f"(wheels) Current position: {cur_pos}. Moving North")
+                    self.dprint(f"Current position: {cur_pos}. Moving North")
                     if cur_pos[1] > y: # +y
                         if self.debug:
-                            print("here 1")
+                            self.dprint("here 1")
                         break
                     time.sleep(SENSOR_DELAY)
             else:
-                print("condition 2")
+                self.dprint("condition 2")
                 forward_move_threads = self.move_direction("S", magnitude=5*TILE_ANG)
                 while forward_move_threads[0].is_alive():
                     cur_pos = self.odometry.get_xy(direction=self.direction)
@@ -198,31 +202,31 @@ class Wheels():
                     time.sleep(SENSOR_DELAY)
         elif axis == "x": # y difference is within threshold -> move in x
             if x - start[0] >= 0: # +x
-                print("condition 3")                
+                self.dprint("condition 3")                
                 forward_move_threads = self.move_direction("E", magnitude=5*TILE_ANG)
                 while forward_move_threads[0].is_alive():
                     cur_pos = self.odometry.get_xy(direction=self.direction)
-                    print(f"Current position: {cur_pos}. Moving East")
+                    self.dprint(f"Current position: {cur_pos}. Moving East")
                     if cur_pos[0] > x:
                         if self.debug:
-                            print("here 3")
+                            self.dprint("here 3")
                         break
                     time.sleep(SENSOR_DELAY)
             else:
-                print("condition 4")
+                self.dprint("condition 4")
                 forward_move_threads = self.move_direction("W", magnitude=5*TILE_ANG)
                 while forward_move_threads[0].is_alive(): # -x
                     cur_pos = self.odometry.get_xy(direction=self.direction)
-                    print(f"Current position: {cur_pos}. Moving West")
+                    self.dprint(f"Current position: {cur_pos}. Moving West")
                     if x > cur_pos[0]:
                         if self.debug:
-                            print("here 4")
+                            self.dprint("here 4")
                         break
                     time.sleep(SENSOR_DELAY)
             self.stop_wheels(forward_move_threads)
         else:
             if self.debug:
-                print("Invalid axis given; cannot move in x and y at once.")
+                self.dprint("Invalid axis given; cannot move in x and y at once.")
             return
 
         

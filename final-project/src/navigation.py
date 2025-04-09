@@ -7,7 +7,17 @@ import time
 
 class Navigation():
     
-    HARD_SWEEP_PATH: list[str] = [("E","fwd"),("E","fwd"),"N","N","W","W","W","W","S","S"]
+    HARD_SWEEP_PATH: list[str] = [ # Used as worst-case scenrio for the demo. 
+        ("E","fwd"),("E","fwd"),("E","rev"),("E","rev"), 
+        ("W","fwd"), ("W","fwd"),("W","rev"),("W","rev"),
+        ("N","fwd"),
+        ("E","fwd"),("E","fwd"),("E","rev"),("E","rev"), 
+        ("W","fwd"), ("W","fwd"),("W","rev"),("W","rev"),
+        ("N","fwd"),
+        ("E","fwd"),("E","fwd"),("E","rev"),("E","rev"),
+        ("W","fwd"), ("W","fwd"),("W","rev"),("W","rev"),
+        ("S","fwd"),
+    ]
     SWEEP_PATH: list[str] = [("x",(87.0, 85.4)),("y",(77.2, 97.5)),("x",(60.0, 104.4)),"face south","CCW adjust", "CW adjust"]
 
     
@@ -16,6 +26,7 @@ class Navigation():
         self.debug = debug
         self.odometry = Odometry(debug=self.debug)
         self.wheels = Wheels(debug=False,odometry=self.odometry)
+        self.use_odoemtry = True
         if debug:
             print("(Navigation) done initialising")
 
@@ -82,6 +93,8 @@ class Navigation():
         # self.wheels.move_to_coord((pos[0]-20, pos[1]))
         
     def assume_entry_position(self):
+        if not self.use_odoemtry:
+            self.wheels.hard_code_traversal_there()
         if START_XY is not None and self.odometry.at_position("N",START_XY):
             if self.debug:
                 print("OK: Assuming entry position in 5 seconds:")
@@ -101,6 +114,9 @@ class Navigation():
     
     def assume_exit_position(self):
         self.wheels.wheels_init() # after sweep, reset the motor power
+        if not self.use_odoemtry:
+            self.wheels.hard_code_traversal_back()
+            return True
         if EXIT_XY is not None:
             pos = self.odometry.get_xy(self.wheels.direction)
             print(f"OK: Assuming EXIT position: {EXIT_XY} from current position: {pos}.")
