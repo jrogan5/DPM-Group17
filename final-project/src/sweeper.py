@@ -17,7 +17,7 @@ class Sweeper:
         self.debug = debug
         wait_ready_sensors(True)
 
-    def _dprint(self,msg:str):
+    def dprint(self,msg:str):
         if self.debug:
             print("(Sweeper) " + msg)
 
@@ -33,13 +33,14 @@ class Sweeper:
     def sweep_motion(self):
         try:
             while self.sweeping_on:
-                self._dprint("sweep motion loop...")
+                self.dprint("sweep motion loop...")
                 if -5 < abs(self.SWEEP_MOTOR.get_position()) < 5: # If the sweeper is starting in the correct position
-                    self._dprint("sweep range set")
+                    self.dprint("sweep range set")
                     self.SWEEP_MOTOR.set_position(SWEEP_RANGE)
                 else:
-                    self._dprint("sweep range reset")
+                    self.dprint("sweep range reset")
                     self.reset_sweep_position()
+                    self.sweeping_on = False # One iteration
                 time.sleep(REFRESH_RATE)
                 self.wait_between_moves()
             print("(Sweeper) Sweeping is turned off")
@@ -57,8 +58,10 @@ class Sweeper:
             print(pos)
             force_kill_thread(sweep_thread, RuntimeError)
             self.SWEEP_MOTOR.set_position(pos)
-        elif self.debug:
-            print("WARNING: Called kill_sweep without an active thread")
+            self.sweeping_on = False
+            self.wait_between_moves()
+            self.dprint("sweep motion killed")
+            self.dprint("WARNING: Called kill_sweep without an active thread")
 
     def full_sweep(self):
         time.sleep(0.1)

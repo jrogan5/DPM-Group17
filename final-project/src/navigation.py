@@ -7,7 +7,7 @@ import time
 
 class Navigation():
     
-    HARD_SWEEP_PATH: list[str] = ["E","E","N","N","W","W","W","W","S","S"]
+    HARD_SWEEP_PATH: list[str] = [("E","fwd"),("E","fwd"),"N","N","W","W","W","W","S","S"]
     SWEEP_PATH: list[str] = [("x",(87.0, 85.4)),("y",(77.2, 97.5)),("x",(60.0, 104.4)),"face south","CCW adjust", "CW adjust"]
 
     
@@ -15,7 +15,7 @@ class Navigation():
         self.room:list[bool] = [[False]*(GRID_LENGTH*NODE_PER_GRID) for _ in range(GRID_HEIGHT*NODE_PER_GRID)]
         self.debug = debug
         self.odometry = Odometry(debug=self.debug)
-        self.wheels = Wheels(debug=self.debug,odometry=self.odometry)
+        self.wheels = Wheels(debug=False,odometry=self.odometry)
         if debug:
             print("(Navigation) done initialising")
 
